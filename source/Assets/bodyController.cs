@@ -10,7 +10,7 @@ using System.Linq;
 public abstract class sensor
 {
 	public Rigidbody2D anchorBody = new Rigidbody2D();
-    public Collider2D collider = new Collider2D();
+    //public Collider2D collider = new Collider2D(); // so we don't look at oursel
 	public Vector2 relativePosition = new Vector2();
 	public abstract void updateSensor();
 	
@@ -29,17 +29,29 @@ public abstract class sensor
 
 
 
-        // New way of getting overlapped points using LINQ
+        /** New way of getting overlapped points using LINQ
+         * Find all colliders at the given point that are on the prescribed
+         * layers. Get the worldObjects from their parent gameObjects and
+         * return the whole lot as a list
+         */
         worldObject[] collidedGameObjects = Physics2D.OverlapPointAll(pos)
-            .Except(new[] { collider })
             .Select(c => c.gameObject)
-            .Where(g => validLayers.Contains(g.layer) &&
-                g.GetComponent<Collider2D>() != null)
+            .Where(g => validLayers.Contains(g.layer))
             .Select(g => g.GetComponent<worldObject>()).ToArray();
 
-
+        // If we have one to return, return the first one.
+        // The first one will be the closest due to how 
+        // OverlapPointAll works
         if (collidedGameObjects.Length > 0)
             return collidedGameObjects[0];
+
+        else
+        {
+            //create background object to return
+            worldObject BG = new worldObject();
+            BG.objectName = "Background";
+            return BG;
+        }
 
 
 
@@ -68,10 +80,6 @@ public abstract class sensor
         //        }
         //    }
         //}
-		//create background object to return
-		worldObject BG = new worldObject();
-		BG.objectName = "Background";
-		return BG;
 	}
 
 	/// <summary>
