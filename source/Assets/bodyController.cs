@@ -5,10 +5,12 @@ using System.Threading;
 using System.Text;
 using System;
 using System.IO;
+using System.Linq;
 
 public abstract class sensor
 {
 	public Rigidbody2D anchorBody = new Rigidbody2D();
+    public Collider2D collider = new Collider2D();
 	public Vector2 relativePosition = new Vector2();
 	public abstract void updateSensor();
 	
@@ -23,26 +25,49 @@ public abstract class sensor
 		validLayers.Add (LayerMask.NameToLayer("Normal Objects"));
 		validLayers.Add (LayerMask.NameToLayer("VisibleButNonreactive"));
 		//int[] validLayers = new int[]{0,8};
-		worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
-		List<System.Object> goList = new List<System.Object>();
-		for (int i = 0; i < goArray.Length; i++) {
-			if (validLayers.Contains(goArray[i].gameObject.layer)) {
-				//Debug.Log("found: " + goArray[i]);
-				goList.Add(goArray[i]);
-				//does it have a collider?
-				if (goArray[i].GetComponent<Collider2D>() != null)
-				{
-					if (goArray[i].GetComponent<Collider2D>().OverlapPoint(pos))
-					{//connect it at that point
-						worldObject obj = goArray[i];
-						//Debug.Log("connecting hand to " + obj + " at " + rightHandRigidBody.position);
-						//assuming the object is a rigidbody, you can get the position of pos relative to obj with obj.rigidbody2D.GetVector(pos)
-						if (obj.objectName!="rightHand" && obj.objectName!="leftHand")
-							return obj;
-					}
-				}
-			}
-		}
+
+
+
+
+        // New way of getting overlapped points using LINQ
+        worldObject[] collidedGameObjects = Physics2D.OverlapPointAll(pos)
+            .Except(new[] { collider })
+            .Select(c => c.gameObject)
+            .Where(g => validLayers.Contains(g.layer) &&
+                g.GetComponent<Collider2D>() != null)
+            .Select(g => g.GetComponent<worldObject>()).ToArray();
+
+
+        if (collidedGameObjects.Length > 0)
+            return collidedGameObjects[0];
+
+
+
+
+
+        // Old way using a for loop
+        //worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
+        //List<System.Object> goList = new List<System.Object>();
+        //for (int i = 0; i < goArray.Length; i++)
+        //{
+        //    if (validLayers.Contains(goArray[i].gameObject.layer))
+        //    {
+        //        //Debug.Log("found: " + goArray[i]);
+        //        goList.Add(goArray[i]);
+        //        //does it have a collider?
+        //        if (goArray[i].GetComponent<Collider2D>() != null)
+        //        {
+        //            if (goArray[i].GetComponent<Collider2D>().OverlapPoint(pos))
+        //            {//connect it at that point
+        //                worldObject obj = goArray[i];
+        //                //Debug.Log("connecting hand to " + obj + " at " + rightHandRigidBody.position);
+        //                //assuming the object is a rigidbody, you can get the position of pos relative to obj with obj.rigidbody2D.GetVector(pos)
+        //                if (obj.objectName != "rightHand" && obj.objectName != "leftHand")
+        //                    return obj;
+        //            }
+        //        }
+        //    }
+        //}
 		//create background object to return
 		worldObject BG = new worldObject();
 		BG.objectName = "Background";
