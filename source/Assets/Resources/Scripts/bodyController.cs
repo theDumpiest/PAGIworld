@@ -26,9 +26,6 @@ public abstract class sensor
 		validLayers.Add (LayerMask.NameToLayer("VisibleButNonreactive"));
 		//int[] validLayers = new int[]{0,8};
 
-
-
-
         /** New way of getting overlapped points using LINQ
          * Find all colliders at the given point that are on the prescribed
          * layers. Get the worldObjects from their parent gameObjects and
@@ -52,10 +49,6 @@ public abstract class sensor
             BG.objectName = "Background";
             return BG;
         }
-
-
-
-
 
         // Old way using a for loop
         //worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
@@ -302,34 +295,53 @@ public class bodyController : worldObject {
 		{
 			Color oldColor = GUI.color;
 			GUI.color = Color.red;
-			for (int x=0; x<numPeripheralSensorsX; x++)
-			{
-				for (int y=0; y<numPeripheralSensorsY; y++)
-				{
-					Vector2 v = peripheralSensors[x,y].getPosition();
-					//Debug.Log(Screen.width); 
-					Vector3 v3 = Camera.main.WorldToScreenPoint(new Vector3(v.x, v.y, 0));
-					//GUI.Box(new Rect(v3.x-1,(Screen.height - v3.y)-1, 2, 2), GUIContent.none); //why is this so slow
-					GUI.Label(new Rect(v3.x-3, (Screen.height - v3.y)-5, 10, 10), "*");
-					//GUI.Box(new Rect(10, 10, 0.5f, 0.5f), GUIContent.none); 
-				}
-			}
+
+            // New way, single foreach loop will go over
+            // every entry in 2d array
+            foreach (visualSensor p in peripheralSensors)
+            {
+                Vector2 v = p.getPosition();
+                Vector3 v3 = Camera.main.WorldToScreenPoint(new Vector3(v.x, v.y, 0));
+                GUI.Label(new Rect(v3.x - 3, (Screen.height - v3.y) - 5, 10, 10), "*");
+            }
+
+            // Old way, nested for loops
+            //for (int x=0; x<numPeripheralSensorsX; x++)
+            //{
+            //    for (int y=0; y<numPeripheralSensorsY; y++)
+            //    {
+            //        Vector2 v = peripheralSensors[x,y].getPosition();
+            //        //Debug.Log(Screen.width); 
+            //        Vector3 v3 = Camera.main.WorldToScreenPoint(new Vector3(v.x, v.y, 0));
+            //        //GUI.Box(new Rect(v3.x-1,(Screen.height - v3.y)-1, 2, 2), GUIContent.none); //why is this so slow
+            //        GUI.Label(new Rect(v3.x-3, (Screen.height - v3.y)-5, 10, 10), "*");
+            //        //GUI.Box(new Rect(10, 10, 0.5f, 0.5f), GUIContent.none); 
+            //    }
+            //}
 			GUI.color = oldColor;
 		}
 		if (GlobalVariables.showDetailedVisionMarkers)
 		{
-			for (int x=0; x<numVisualSensorsX; x++)
-			{
-				for (int y=0; y<numVisualSensorsY; y++)
-				{
-					Vector2 v = visualSensors[x,y].getPosition();
-					//Debug.Log(Screen.width); 
-					Vector3 v3 = Camera.main.WorldToScreenPoint(new Vector3(v.x, v.y, 0));
-					//GUI.Box(new Rect(v3.x-1,(Screen.height - v3.y)-1, 2, 2), GUIContent.none); //why is this so slow
-					GUI.Label(new Rect(v3.x-3, (Screen.height - v3.y)-5, 10, 10), "*");
-					//GUI.Box(new Rect(10, 10, 0.5f, 0.5f), GUIContent.none); 
-				}
-			}
+
+            foreach (visualSensor p in visualSensors)
+            {
+                Vector2 v = p.getPosition();
+                Vector3 v3 = Camera.main.WorldToScreenPoint(new Vector3(v.x, v.y, 0));
+                GUI.Label(new Rect(v3.x - 3, (Screen.height - v3.y) - 5, 10, 10), "*");
+            }
+
+            //for (int x=0; x<numVisualSensorsX; x++)
+            //{
+            //    for (int y=0; y<numVisualSensorsY; y++)
+            //    {
+            //        Vector2 v = visualSensors[x,y].getPosition();
+            //        //Debug.Log(Screen.width); 
+            //        Vector3 v3 = Camera.main.WorldToScreenPoint(new Vector3(v.x, v.y, 0));
+            //        //GUI.Box(new Rect(v3.x-1,(Screen.height - v3.y)-1, 2, 2), GUIContent.none); //why is this so slow
+            //        GUI.Label(new Rect(v3.x-3, (Screen.height - v3.y)-5, 10, 10), "*");
+            //        //GUI.Box(new Rect(10, 10, 0.5f, 0.5f), GUIContent.none); 
+            //    }
+            //}
 		}
 	}
 	
