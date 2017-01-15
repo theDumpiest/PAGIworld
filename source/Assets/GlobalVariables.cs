@@ -126,7 +126,7 @@ public class GlobalVariables : MonoBehaviour {
 					}
 					else
 					{
-						obj.rigidbody2D.velocity = new Vector2(0,0);
+						obj.GetComponent<Rigidbody2D>().velocity = new Vector2(0,0);
 					}
 				}
 				obj.transform.hasChanged = false;

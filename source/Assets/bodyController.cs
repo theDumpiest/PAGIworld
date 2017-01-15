@@ -30,9 +30,9 @@ public abstract class sensor
 				//Debug.Log("found: " + goArray[i]);
 				goList.Add(goArray[i]);
 				//does it have a collider?
-				if (goArray[i].collider2D != null)
+				if (goArray[i].GetComponent<Collider2D>() != null)
 				{
-					if (goArray[i].collider2D.OverlapPoint(pos))
+					if (goArray[i].GetComponent<Collider2D>().OverlapPoint(pos))
 					{//connect it at that point
 						worldObject obj = goArray[i];
 						//Debug.Log("connecting hand to " + obj + " at " + rightHandRigidBody.position);
@@ -189,8 +189,8 @@ public class bodyController : worldObject {
 		Application.runInBackground = true;
 		//Debug.Log(System.IO.Directory.GetCurrentDirectory());
 		
-		leftHandRigidBody = leftHand.rigidbody2D;
-		rightHandRigidBody = rightHand.rigidbody2D;
+		leftHandRigidBody = leftHand.GetComponent<Rigidbody2D>();
+		rightHandRigidBody = rightHand.GetComponent<Rigidbody2D>();
 		leftHand.objectName = "leftHand";
 		rightHand.objectName = "rightHand";
 		
@@ -205,22 +205,22 @@ public class bodyController : worldObject {
 		rightHandSensor[2] = new touchSensor(rightHandRigidBody, new Vector2(0, -.65f));
 		rightHandSensor[3] = new touchSensor(rightHandRigidBody, new Vector2(-0.6f, 0));
 		rightHandSensor[4] = new touchSensor(rightHandRigidBody, new Vector2(0, 0));
-		bodySensor[0] = new touchSensor(rigidbody2D, new Vector2(0, 1.2f));
-		bodySensor[1] = new touchSensor(rigidbody2D, new Vector2(0.9f, 0.9f));
-		bodySensor[2] = new touchSensor(rigidbody2D, new Vector2(1.2f, 0));
-		bodySensor[3] = new touchSensor(rigidbody2D, new Vector2(0.9f, -0.9f));
-		bodySensor[4] = new touchSensor(rigidbody2D, new Vector2(0, -1.2f));
-		bodySensor[5] = new touchSensor(rigidbody2D, new Vector2(-0.9f, -0.9f));
-		bodySensor[6] = new touchSensor(rigidbody2D, new Vector2(-1.2f, 0));
-		bodySensor[7] = new touchSensor(rigidbody2D, new Vector2(-0.9f, 0.9f));
+		bodySensor[0] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(0, 1.2f));
+		bodySensor[1] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(0.9f, 0.9f));
+		bodySensor[2] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(1.2f, 0));
+		bodySensor[3] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(0.9f, -0.9f));
+		bodySensor[4] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(0, -1.2f));
+		bodySensor[5] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(-0.9f, -0.9f));
+		bodySensor[6] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(-1.2f, 0));
+		bodySensor[7] = new touchSensor(GetComponent<Rigidbody2D>(), new Vector2(-0.9f, 0.9f));
 		Vector2 blCorner = new Vector2(-2.25f,1.65f); //the distance the bottom left corner of the visual field is from the body's center
 		for (int x=0; x<numVisualSensorsX; x++)
 			for (int y=0; y<numVisualSensorsY; y++)
-				visualSensors[x,y] = new visualSensor(rigidbody2D, blCorner + new Vector2(x*0.148f, y*0.1475f), x, y);
+				visualSensors[x,y] = new visualSensor(GetComponent<Rigidbody2D>(), blCorner + new Vector2(x*0.148f, y*0.1475f), x, y);
 		blCorner = new Vector2(-14.5f,0.5f); //the distance the bottom left corner of the peripheral field is from the body's center
 		for (int x=0; x<numPeripheralSensorsX; x++)
 			for (int y=0; y<numPeripheralSensorsY; y++)
-				peripheralSensors[x,y] = new visualSensor(rigidbody2D, blCorner + new Vector2(x*2f, y*2f), x, y);
+				peripheralSensors[x,y] = new visualSensor(GetComponent<Rigidbody2D>(), blCorner + new Vector2(x*2f, y*2f), x, y);
 	
 		/*//connect each sensor to a lookup key
 		for (int i=0; i<5; i++)
@@ -313,39 +313,39 @@ public class bodyController : worldObject {
 		switch (sensorAspectCode)
 		{
 			case "Sx":
-			sensorVal = rigidbody2D.velocity.x;
+			sensorVal = GetComponent<Rigidbody2D>().velocity.x;
 			break;
 			case "Sy":
-			sensorVal = rigidbody2D.velocity.y;
+			sensorVal = GetComponent<Rigidbody2D>().velocity.y;
 			break;
 			case "BPx":
-			sensorVal = rigidbody2D.position.x;
+			sensorVal = GetComponent<Rigidbody2D>().position.x;
 			break;
 			case "BPy":
-			sensorVal = rigidbody2D.position.y;
+			sensorVal = GetComponent<Rigidbody2D>().position.y;
 			break;
 			case "LPx":
 			leftHandSensor[4].updateSensor(); //recall sensor 4 is right in the middle of the hand
-			Vector2 relativePoint = rigidbody2D.GetPoint(leftHandSensor[4].getPosition());
+			Vector2 relativePoint = GetComponent<Rigidbody2D>().GetPoint(leftHandSensor[4].getPosition());
 			sensorVal = relativePoint.x;
 			break;
 			case "LPy":
 			leftHandSensor[4].updateSensor(); //recall sensor 4 is right in the middle of the hand
-			relativePoint = rigidbody2D.GetPoint(leftHandSensor[4].getPosition());
+			relativePoint = GetComponent<Rigidbody2D>().GetPoint(leftHandSensor[4].getPosition());
 			sensorVal = relativePoint.y;
 			break;
 			case "RPx":
 			rightHandSensor[4].updateSensor(); //recall sensor 4 is right in the middle of the hand
-			relativePoint = rigidbody2D.GetPoint(rightHandSensor[4].getPosition());
+			relativePoint = GetComponent<Rigidbody2D>().GetPoint(rightHandSensor[4].getPosition());
 			sensorVal = relativePoint.x;
 			break;
 			case "RPy":
 			rightHandSensor[4].updateSensor(); //recall sensor 4 is right in the middle of the hand
-			relativePoint = rigidbody2D.GetPoint(rightHandSensor[4].getPosition());
+			relativePoint = GetComponent<Rigidbody2D>().GetPoint(rightHandSensor[4].getPosition());
 			sensorVal = relativePoint.y;
 			break;
 			case "A":
-			sensorVal = rigidbody2D.rotation;
+			sensorVal = GetComponent<Rigidbody2D>().rotation;
 			break;
 			default:
 			isStandardSensor = true;
@@ -650,7 +650,7 @@ public class bodyController : worldObject {
 				{
 					//bubbleName = firstMsg.otherStrings[0] + "_speechBubble";
 					sbc.initialize(firstMsg.otherStrings[1], Convert.ToInt32(firstMsg.floatContent), 
-					                 rigidbody2D.position+firstMsg.vectorContent);
+					                 GetComponent<Rigidbody2D>().position+firstMsg.vectorContent);
 				}
 				else if (firstMsg.otherStrings[0] == "N") //there is no speaker; use the position given as absolute
 				{
@@ -675,7 +675,7 @@ public class bodyController : worldObject {
 						{
 							//create item
 							sbc.initialize(firstMsg.otherStrings[1], Convert.ToInt32(firstMsg.floatContent), 
-								               customItems[firstMsg.otherStrings[0]].rigidbody2D.position+firstMsg.vectorContent);
+								               customItems[firstMsg.otherStrings[0]].GetComponent<Rigidbody2D>().position+firstMsg.vectorContent);
 						}
 						outgoingMessages.Add("say," + firstMsg.otherStrings[0] + ",OK\n");
 					}
@@ -699,8 +699,8 @@ public class bodyController : worldObject {
 					}
 					else
 					{
-						customItems[firstMsg.stringContent].rigidbody2D.AddForce(firstMsg.vectorContent);
-						customItems[firstMsg.stringContent].rigidbody2D.AddTorque(firstMsg.floatContent);
+						customItems[firstMsg.stringContent].GetComponent<Rigidbody2D>().AddForce(firstMsg.vectorContent);
+						customItems[firstMsg.stringContent].GetComponent<Rigidbody2D>().AddTorque(firstMsg.floatContent);
 						outgoingMessages.Add("addForceToItem," + firstMsg.stringContent + ",OK\n");
 					}
 				}
@@ -724,7 +724,7 @@ public class bodyController : worldObject {
 						worldObject wo = customItems[firstMsg.stringContent];
 						string toReturn = "getInfoAboutItem," + firstMsg.stringContent + ",";
 						toReturn = toReturn + wo.transform.position.x.ToString() + "," + wo.transform.position.y.ToString() + ",";
-						toReturn = toReturn + wo.rigidbody2D.velocity.x.ToString() + "," + wo.rigidbody2D.velocity.y.ToString() + "\n";
+						toReturn = toReturn + wo.GetComponent<Rigidbody2D>().velocity.x.ToString() + "," + wo.GetComponent<Rigidbody2D>().velocity.y.ToString() + "\n";
 						outgoingMessages.Add(toReturn);
 					}
 				}
@@ -935,60 +935,60 @@ public class bodyController : worldObject {
 					RHG,RHR - Right hand grip and release. v is required, but ignored here. A hand is either in a state of gripping or it isn't.
 					LHG,LHR - Left hand grip and release. v is required, but ignored here. A hand is either in a state of gripping or it isn't.*/
 					case "LHH":
-						Vector2 f = rigidbody2D.transform.rotation*new Vector2(firstMsg.function1.evaluate(getSensorAspectValue),0);//new Vector2(Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+						Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(firstMsg.function1.evaluate(getSensorAspectValue),0);//new Vector2(Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 						leftHandRigidBody.AddForce(f);
-						rigidbody2D.AddForce(-f);
+						GetComponent<Rigidbody2D>().AddForce(-f);
 						//rigidbody2D.AddForce(new Vector2(0, 10000));
 						outgoingMessages.Add("LHH,1\n");
 					break;
 					case "LHV":
-						f = rigidbody2D.transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+						f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 						leftHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-						rigidbody2D.AddForce(-f);
+						GetComponent<Rigidbody2D>().AddForce(-f);
 						outgoingMessages.Add("LHV,1\n");
 					break;
 					case "LHvec":
-						f = rigidbody2D.transform.rotation*
+						f = GetComponent<Rigidbody2D>().transform.rotation*
 							(new Vector2(firstMsg.function1.evaluate(getSensorAspectValue), firstMsg.function2.evaluate(getSensorAspectValue)));
 						leftHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-						rigidbody2D.AddForce(-f);
+						GetComponent<Rigidbody2D>().AddForce(-f);
 						outgoingMessages.Add("LHvec,1\n");
 						break;
 					case "RHH":
-						f = rigidbody2D.transform.rotation*new Vector2(firstMsg.function1.evaluate(getSensorAspectValue),0);//new Vector2(Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+						f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(firstMsg.function1.evaluate(getSensorAspectValue),0);//new Vector2(Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 						rightHandRigidBody.AddForce(f);
-						rigidbody2D.AddForce(-f);
+						GetComponent<Rigidbody2D>().AddForce(-f);
 						//rigidbody2D.AddForce(new Vector2(0, 10000));
 						outgoingMessages.Add("RHH,1\n");
 					break;
 					case "RHV":
-						f = rigidbody2D.transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+						f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 						rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-						rigidbody2D.AddForce(-f);
+						GetComponent<Rigidbody2D>().AddForce(-f);
 						outgoingMessages.Add("RHV,1\n");
 					break;
 					case "RHvec":
-						f = rigidbody2D.transform.rotation*
+						f = GetComponent<Rigidbody2D>().transform.rotation*
 							(new Vector2(firstMsg.function1.evaluate(getSensorAspectValue), firstMsg.function2.evaluate(getSensorAspectValue)));;
-						rigidbody2D.AddForce(-f);
+						GetComponent<Rigidbody2D>().AddForce(-f);
 						rightHandRigidBody.AddForce(f);
 						outgoingMessages.Add("RHvec,1\n");
 						break;
 					case "BMH":
-						f = rigidbody2D.transform.rotation*new Vector2(firstMsg.function1.evaluate(getSensorAspectValue),0);//new Vector2(Mathf.Cos(Mathf.Deg2Rad*rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Sin(Mathf.Deg2Rad*rigidbody2D.rotation)*firstMsg.floatContent);
-						rigidbody2D.AddForce(f);
+						f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(firstMsg.function1.evaluate(getSensorAspectValue),0);//new Vector2(Mathf.Cos(Mathf.Deg2Rad*rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Sin(Mathf.Deg2Rad*rigidbody2D.rotation)*firstMsg.floatContent);
+						GetComponent<Rigidbody2D>().AddForce(f);
 						outgoingMessages.Add("BMH,1\n");
 					break;
 					case "BMV":
-						f = rigidbody2D.transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-						rigidbody2D.AddForce(f);
+						f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+						GetComponent<Rigidbody2D>().AddForce(f);
 						Debug.Log("added f: " + f.y);
 						outgoingMessages.Add("BMV,1\n");
 					break;
 					case "BMvec":
-						f = rigidbody2D.transform.rotation*
+						f = GetComponent<Rigidbody2D>().transform.rotation*
 							(new Vector2(firstMsg.function1.evaluate(getSensorAspectValue), firstMsg.function2.evaluate(getSensorAspectValue)));
-						rigidbody2D.AddForce(f);
+						GetComponent<Rigidbody2D>().AddForce(f);
 						outgoingMessages.Add("BMvec,1\n");
 						break;
 					
@@ -1000,10 +1000,10 @@ public class bodyController : worldObject {
 							outgoingMessages.Add("J,0\n");
 						break;
 					case "BR":
-						rigidbody2D.rotation += firstMsg.function1.evaluate(getSensorAspectValue);
-						leftHand.rigidbody2D.rotation = rigidbody2D.rotation;
-						rightHand.rigidbody2D.rotation = rigidbody2D.rotation;
-						rigidbody2D.AddForce(Vector2.zero); //forces update of rotation
+						GetComponent<Rigidbody2D>().rotation += firstMsg.function1.evaluate(getSensorAspectValue);
+						leftHand.GetComponent<Rigidbody2D>().rotation = GetComponent<Rigidbody2D>().rotation;
+						rightHand.GetComponent<Rigidbody2D>().rotation = GetComponent<Rigidbody2D>().rotation;
+						GetComponent<Rigidbody2D>().AddForce(Vector2.zero); //forces update of rotation
 						outgoingMessages.Add ("BR,1\n");
 					break;
 					case "RHG":
@@ -1076,7 +1076,7 @@ public class bodyController : worldObject {
 					case 'B': //body touch sensor B0-B7
 						if (firstMsg.stringContent[1]=='P') //body position
 						{
-							Vector2 v = rigidbody2D.position;
+							Vector2 v = GetComponent<Rigidbody2D>().position;
 							outgoingMessages.Add("BP," + v.x.ToString() + "," + v.y.ToString() + "\n");
 						}
 						else
@@ -1088,14 +1088,14 @@ public class bodyController : worldObject {
 						}
 					break;
 					case 'S': //speed sensor
-						Vector2 v = rigidbody2D.GetRelativePointVelocity(Vector2.zero);
+						Vector2 v = GetComponent<Rigidbody2D>().GetRelativePointVelocity(Vector2.zero);
 						outgoingMessages.Add ("S," + v.x.ToString () + "," + v.y.ToString() + "\n");
 						break;
 					case 'L': //L0-L4, or LP
 						if (firstMsg.stringContent[1]=='P')
 						{//proprioception; get sensor position relative to body
 							leftHandSensor[4].updateSensor(); //recall sensor 4 is right in the middle of the hand
-							Vector2 relativePoint = rigidbody2D.GetPoint(leftHandSensor[4].getPosition());
+							Vector2 relativePoint = GetComponent<Rigidbody2D>().GetPoint(leftHandSensor[4].getPosition());
 							outgoingMessages.Add("LP," + relativePoint.x.ToString () + "," + relativePoint.y.ToString() + "\n");
 	
 						}
@@ -1111,7 +1111,7 @@ public class bodyController : worldObject {
 						if (firstMsg.stringContent[1]=='P')
 						{//proprioception; get sensor position relative to body
 							rightHandSensor[4].updateSensor();
-						Vector2 relativePoint = rigidbody2D.GetPoint(rightHandSensor[4].getPosition());
+						Vector2 relativePoint = GetComponent<Rigidbody2D>().GetPoint(rightHandSensor[4].getPosition());
 							outgoingMessages.Add("RP," + relativePoint.x.ToString () + "," + relativePoint.y.ToString() + "\n");
 						}
 						else
@@ -1157,7 +1157,7 @@ public class bodyController : worldObject {
 						outgoingMessages.Add(response);
 					break;
 					case 'A': //rotation sensor
-						outgoingMessages.Add("A," + (Mathf.Deg2Rad*rigidbody2D.rotation).ToString() + "\n");
+						outgoingMessages.Add("A," + (Mathf.Deg2Rad*GetComponent<Rigidbody2D>().rotation).ToString() + "\n");
 					break;
 					default:
 						outgoingMessages.Add("sensorRequest,UNRECOGNIZED_SENSOR_ERROR:"+firstMsg.stringContent.Trim()+"\n");
@@ -1180,11 +1180,11 @@ public class bodyController : worldObject {
 		
 		//update arm positions
 		//leftHand.objectName = "hi";
-		Vector2 leftRelativePoint = gameObject.rigidbody2D.GetRelativePoint(leftHand.GetComponent<DistanceJoint2D>().connectedAnchor);
+		Vector2 leftRelativePoint = gameObject.GetComponent<Rigidbody2D>().GetRelativePoint(leftHand.GetComponent<DistanceJoint2D>().connectedAnchor);
 		Vector3 leftAnchor = new Vector3(leftRelativePoint.x, leftRelativePoint.y);
 		leftArm[0].transform.position = (leftHand.transform.position*1/3 + leftAnchor*2/3);
 		leftArm[1].transform.position = (leftHand.transform.position*2/3 + leftAnchor*1/3);
-		Vector2 rightRelativePoint = gameObject.rigidbody2D.GetRelativePoint(rightHand.GetComponent<DistanceJoint2D>().connectedAnchor);
+		Vector2 rightRelativePoint = gameObject.GetComponent<Rigidbody2D>().GetRelativePoint(rightHand.GetComponent<DistanceJoint2D>().connectedAnchor);
 		Vector3 rightAnchor = new Vector3(rightRelativePoint.x, rightRelativePoint.y);
 		rightArm[0].transform.position = (rightHand.transform.position*1/3 + rightAnchor*2/3);
 		rightArm[1].transform.position = (rightHand.transform.position*2/3 + rightAnchor*1/3);
@@ -1213,50 +1213,50 @@ public class bodyController : worldObject {
 		//right hand
 		if (Input.GetKey(KeyCode.UpArrow)) {//GetKeyDown is one-time press only
 			//transform.Translate(new Vector3(1,0,0));
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(0,handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		if (Input.GetKey (KeyCode.DownArrow)) {
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(0,-handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,-handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		if (Input.GetKey(KeyCode.LeftArrow))
 		{
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(-handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(-handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		if (Input.GetKey(KeyCode.RightArrow))
 		{
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}		
 		//left hand
 		if (Input.GetKey (KeyCode.W)) {//GetKeyDown is one-time press only
 			//transform.Translate(new Vector3(1,0,0));
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(0,handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			leftHandRigidBody.AddForce(f);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		if (Input.GetKey (KeyCode.S)) {
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(0,-handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,-handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			leftHandRigidBody.AddForce(f);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		if (Input.GetKey(KeyCode.A))
 		{
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(-handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(-handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			leftHandRigidBody.AddForce(f);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		if (Input.GetKey(KeyCode.D))
 		{
-			Vector2 f = rigidbody2D.transform.rotation*new Vector2(handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 			leftHandRigidBody.AddForce(f);
-			rigidbody2D.AddForce(-f);
+			GetComponent<Rigidbody2D>().AddForce(-f);
 		}
 		
 		
@@ -1283,38 +1283,38 @@ public class bodyController : worldObject {
 		//Rotate
 		if (Input.GetKey(KeyCode.R))
 		{
-			rigidbody2D.rotation += 1.0f;
-			rigidbody2D.rotation %= 360f;
-			leftHandRigidBody.rotation = rigidbody2D.rotation;
-			rightHandRigidBody.rotation = rigidbody2D.rotation;
+			GetComponent<Rigidbody2D>().rotation += 1.0f;
+			GetComponent<Rigidbody2D>().rotation %= 360f;
+			leftHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
+			rightHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
 			//Debug.Log (rigidbody2D.GetRelativePoint(rightAnchor));
-			rigidbody2D.AddForce(new Vector2(0,0)); //this forces the screen to update his rotation
+			GetComponent<Rigidbody2D>().AddForce(new Vector2(0,0)); //this forces the screen to update his rotation
 		}
 		if (Input.GetKey(KeyCode.T))
 		{
-			rigidbody2D.rotation -= 1.0f;
-			rigidbody2D.rotation %= 360f;
-			leftHandRigidBody.rotation = rigidbody2D.rotation;
-			rightHandRigidBody.rotation = rigidbody2D.rotation;
+			GetComponent<Rigidbody2D>().rotation -= 1.0f;
+			GetComponent<Rigidbody2D>().rotation %= 360f;
+			leftHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
+			rightHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
 			//Debug.Log (rigidbody2D.GetRelativePoint(rightAnchor));
-			rigidbody2D.AddForce(new Vector2(0,0)); //this forces the screen to update his rotation
+			GetComponent<Rigidbody2D>().AddForce(new Vector2(0,0)); //this forces the screen to update his rotation
 		}
 		
 		//Move
 		if (Input.GetKey(KeyCode.F))
-			rigidbody2D.AddForce(rigidbody2D.transform.rotation*(new Vector2(-500f,0)));
+			GetComponent<Rigidbody2D>().AddForce(GetComponent<Rigidbody2D>().transform.rotation*(new Vector2(-500f,0)));
 		if (Input.GetKey(KeyCode.G))
-			rigidbody2D.AddForce(transform.rotation*new Vector2(500f,0));
+			GetComponent<Rigidbody2D>().AddForce(transform.rotation*new Vector2(500f,0));
 	}
 	
 	bool jump(float amt)
 	{
 		//is he touching anything on the ground? Calculate five contact points between bodySensors 3 and 5.
-		Vector2[] bottom = new Vector2[]{rigidbody2D.GetRelativePoint(new Vector2(0.9f, -0.9f)),
-			rigidbody2D.GetRelativePoint(new Vector2(0.5f, -1.2f)),
-			rigidbody2D.GetRelativePoint(new Vector2(0, -1.2f)),
-			rigidbody2D.GetRelativePoint(new Vector2(-0.5f, -1.2f)),
-			rigidbody2D.GetRelativePoint(new Vector2(-0.9f, -0.9f))};
+		Vector2[] bottom = new Vector2[]{GetComponent<Rigidbody2D>().GetRelativePoint(new Vector2(0.9f, -0.9f)),
+			GetComponent<Rigidbody2D>().GetRelativePoint(new Vector2(0.5f, -1.2f)),
+			GetComponent<Rigidbody2D>().GetRelativePoint(new Vector2(0, -1.2f)),
+			GetComponent<Rigidbody2D>().GetRelativePoint(new Vector2(-0.5f, -1.2f)),
+			GetComponent<Rigidbody2D>().GetRelativePoint(new Vector2(-0.9f, -0.9f))};
 		//Debug.Log(bodySensor[4].objectTouched);
 		//int layerNum = 8; //Normal objects layer
 		Rigidbody2D[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(Rigidbody2D)) as Rigidbody2D[];
@@ -1330,12 +1330,12 @@ public class bodyController : worldObject {
 					continue;
 				//Debug.Log("found: " + goArray[i]);
 				//goList.Add(goArray[i]);
-				if (goArray[i].collider2D.OverlapPoint(bottom[n]))
+				if (goArray[i].GetComponent<Collider2D>().OverlapPoint(bottom[n]))
 				{//connect it at that point
 					//Debug.Log("jump found: " + goArray[i]);
 					Rigidbody2D obj = goArray[i];
-					Vector2 jumpForce = rigidbody2D.transform.rotation*new Vector2(0f,amt);
-					rigidbody2D.AddForce(jumpForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*30000f,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*30000f));
+					Vector2 jumpForce = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0f,amt);
+					GetComponent<Rigidbody2D>().AddForce(jumpForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*30000f,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*30000f));
 					obj.AddForce(-jumpForce);//-new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*30000f,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*30000f));
 					foundGround = true;
 					break;
@@ -1380,7 +1380,7 @@ public class bodyController : worldObject {
 		triggerBoxController[] w = FindObjectsOfType<triggerBoxController>();
 		foreach (triggerBoxController o in w)
 		{
-			if (o.collider2D.OverlapPoint(handRigidBody.position))
+			if (o.GetComponent<Collider2D>().OverlapPoint(handRigidBody.position))
 				o.GripOrReleaseHandler(isGrasp, forLeftHand);
 		}
 		
@@ -1402,14 +1402,14 @@ public class bodyController : worldObject {
 					if (goArray[i].gameObject.layer == layerNum) {
 						//Debug.Log("found: " + goArray[i].collider2D);
 						//goList.Add(goArray[i]);
-						if (goArray[i].collider2D.OverlapPoint(handRigidBody.position))
+						if (goArray[i].GetComponent<Collider2D>().OverlapPoint(handRigidBody.position))
 							
 						{
 							//connect it at that point
 							worldObject obj = goArray[i];
 							Debug.Log("connecting hand to " + obj + " at " + handRigidBody.position);
 							handJoint[handIndex] = obj.gameObject.AddComponent<DistanceJoint2D>();
-							handJoint[handIndex].anchor = obj.rigidbody2D.GetPoint(handRigidBody.position);
+							handJoint[handIndex].anchor = obj.GetComponent<Rigidbody2D>().GetPoint(handRigidBody.position);
 							//Debug.Log(obj.rigidbody2D.GetPoint(rightHandRigidBody.position));
 							handJoint[handIndex].connectedBody = handRigidBody;
 							handJoint[handIndex].connectedAnchor = new Vector2(0,0);//Vector2.zero; //the position on the hand that grabs it
