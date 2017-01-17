@@ -110,28 +110,28 @@ public class GlobalVariables : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//check if any objects are off scren
-		worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
-		List<string> doNotRemove = new List<string>() { "leftHand", "rightHand", "mainBody" };
-		foreach (worldObject obj in goArray)
-		{
-			if (obj.transform.hasChanged)
-			{
-				//is it out of bounds?
-				if (obj.transform.position.x < -195f || obj.transform.position.x > 194f || obj.transform.position.y < -122f)// || obj.transform.position.y > 126f)
-				{
-					if (!doNotRemove.Contains(obj.objectName))
-					{
-						Destroy(obj.gameObject);
-					}
-					else
-					{
-						obj.GetComponent<Rigidbody2D>().velocity = new Vector2(0,0);
-					}
-				}
-				obj.transform.hasChanged = false;
-			}
-		}
+		//check if any objects are off screen
+        //worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
+        //List<string> doNotRemove = new List<string>() { "leftHand", "rightHand", "mainBody" };
+        //foreach (worldObject obj in goArray)
+        //{
+        //    if (obj.transform.hasChanged)
+        //    {
+        //        //is it out of bounds?
+        //        if (obj.transform.position.x < -195f || obj.transform.position.x > 194f || obj.transform.position.y < -122f)// || obj.transform.position.y > 126f)
+        //        {
+        //            if (!doNotRemove.Contains(obj.objectName))
+        //            {
+        //                Destroy(obj.gameObject);
+        //            }
+        //            else
+        //            {
+        //                obj.GetComponent<Rigidbody2D>().velocity = new Vector2(0,0);
+        //            }
+        //        }
+        //        obj.transform.hasChanged = false;
+        //    }
+        //}
 
 		//check all activeStates to see if any need to expire
 		List<State> toRemove = new List<State>();
