@@ -218,7 +218,7 @@ public class Control : MonoBehaviour {
 				continue;
 			}
 			bodyInterface.messageQueue.Add(a);
-			//Debug.Log("added to message queue: " + a.messageType.ToString() + ", " + a.stringContent);
+            //Debug.Log("added to message queue: " + a.messageType.ToString() + ", " + a.stringContent);
 		}
 	}
 	

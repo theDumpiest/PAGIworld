@@ -359,10 +359,13 @@ public class ControlPanel : MonoBehaviour
 		GUILayout.Label("Current coordinates of PAGI guy: " + mainGuy[0].GetComponent<Rigidbody2D>().position.ToString() + "\t\t");
 		if (GUILayout.Button(new GUIContent("Reset PAGI guy to (0,0)"))) {
 			mainGuy[0].GetComponent<Rigidbody2D>().position = new Vector2(0,0);
+            mainGuy[0].GetComponent<Rigidbody2D>().isKinematic = false; // Precautionary in case he hit a deathWall and needs Gravity again
 			leftHandController[] leftHand = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(leftHandController)) as leftHandController[];
 			rightHandController[] rightHand = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(rightHandController)) as rightHandController[];
 			leftHand[0].GetComponent<Rigidbody2D>().position = new Vector2(-1f, 1f);
-			rightHand[0].GetComponent<Rigidbody2D>().position = new Vector2(1f, 1f);	
+            leftHand[0].GetComponent<Rigidbody2D>().isKinematic = false; // Precautionary in case he hit a deathWall and needs Gravity again
+			rightHand[0].GetComponent<Rigidbody2D>().position = new Vector2(1f, 1f);
+            rightHand[0].GetComponent<Rigidbody2D>().isKinematic = false; // Precautionary in case he hit a deathWall and needs Gravity again
 			mainGuy[0].GetComponent<Rigidbody2D>().rotation = 0;
 			leftHand[0].GetComponent<Rigidbody2D>().rotation = 0;
 			rightHand[0].GetComponent<Rigidbody2D>().rotation = 0;

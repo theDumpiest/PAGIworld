@@ -28,6 +28,8 @@ public class SocketRead : MonoBehaviour
 			return socket;
 		}
 	}
+
+    SocketRead() { }
 	
 	
 	SocketRead (Socket socket, IncomingReadHandler readHandler, IncomingReadErrorHandler errorHandler = null)

@@ -20,15 +20,15 @@ Platform assembly: C:\Users\Cameron\Documents\PAGI Source\PAGIworld\PAGI_LINQ_te
 Loading C:\Users\Cameron\Documents\PAGI Source\PAGIworld\PAGI_LINQ_test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\Cameron\Documents\PAGI Source\PAGIworld\PAGI_LINQ_test_Data\Managed\Fluvio.Runtime.dll (this message is harmless)
 Loading C:\Users\Cameron\Documents\PAGI Source\PAGIworld\PAGI_LINQ_test_Data\Managed\Fluvio.Runtime.dll into Unity Child Domain
-- Completed reload, in  0.059 seconds
+- Completed reload, in  0.063 seconds
 Platform assembly: C:\Users\Cameron\Documents\PAGI Source\PAGIworld\PAGI_LINQ_test_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Cameron\Documents\PAGI Source\PAGIworld\PAGI_LINQ_test_Data\Managed\System.dll (this message is harmless)
 desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.786666 ms
-Hosting on 192.168.1.3:42209
+UnloadTime: 0.819555 ms
+Hosting on 10.100.234.124:42209
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
@@ -52,311 +52,83 @@ Client connected
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Client 0 says: sensorRequest,L0
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L0, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L0,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L0
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L0, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L0,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L3
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L3, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L3,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L1
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L1, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L1,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L2
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L2, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L2,1,0,0,0,0,0,0,floatingHorizontalWall
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L0
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L0, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L0,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L1
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L1, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L1,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,L2
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, L2, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: L2,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R0
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R0, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R0,0,0,0,0,0,0,0,Background
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Client 0 says: sensorRequest,R1
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R1, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R1,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R2
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R2, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R2,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R3
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R3, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R3,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R4
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R4, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R4,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R0
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R0, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R0,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R4
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R4, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R4,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R1
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R1, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R1,0,0,0,0,0,0,0,Background
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R2
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-checking sensor value {sensorRequest, R2, 100}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-sent reply to 192.168.1.3:20490: R2,1,0,0,0,0,0,0,floatingHorizontalWall
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R1
-
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-checking sensor value {sensorRequest, R1, 100}
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-sent reply to 192.168.1.3:20490: R1,0,0,0,0,0,0,0,Background
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Client 0 says: sensorRequestR3
-
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-received unrecognized command from client connection ERR: Unrecognized Command. Received string:"sensorRequestR3"
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-sent reply to 192.168.1.3:20490: UnrecognizedCommandError:ERR: Unrecognized Command. Received string:"sensorRequestR3"
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Client 0 says: sensorRequest,R3
-
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-checking sensor value {sensorRequest, R3, 100}
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-sent reply to 192.168.1.3:20490: R3,0,0,0,0,0,0,0,Background
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Client 0 says: sensorRequest,R4
 
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-checking sensor value {sensorRequest, R4, 100}
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-sent reply to 192.168.1.3:20490: R4,0,0,0,0,0,0,0,Background
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Client 0 says: sensorRequest,R0
-
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-checking sensor value {sensorRequest, R0, 100}
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-sent reply to 192.168.1.3:20490: R0,0,0,0,0,0,0,0,Background
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Client 0 says: sensorRequest,L0
-
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-checking sensor value {sensorRequest, L0, 100}
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-sent reply to 192.168.1.3:20490: L0,1,0,0,0,0,0,0,floatingWallBlock
+Client 0 says: dropItem,apple,0,0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Receive error: System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host.
 
-  at System.Net.Sockets.Socket+SocketAsyncResult.CheckIfThrowDelayedException () [0x00000] in <filename unknown>:0 
-  at System.Net.Sockets.Socket.EndReceive (IAsyncResult asyncResult, System.Net.Sockets.SocketError& errorCode) [0x00000] in <filename unknown>:0 
-  at System.Net.Sockets.Socket.EndReceive (IAsyncResult result) [0x00000] in <filename unknown>:0 
-  at SocketRead.OnReceive (IAsyncResult result) [0x00000] in <filename unknown>:0 
+0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
@@ -369,4 +141,4 @@ finished disconnecting client socket
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: ce8 -> priority: 1 
+  Thread -> id: 1ac0 -> priority: 1 

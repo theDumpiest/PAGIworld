@@ -22,6 +22,9 @@ public class DeathWall : MonoBehaviour {
             Destroy(other.gameObject);
 
         else
+        {
             other.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+            other.GetComponent<Rigidbody2D>().isKinematic = true;
+        }
     }
 }
