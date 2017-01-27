@@ -98,7 +98,8 @@ namespace ThinksquirrelSoftware.Fluvio.Plugins
 				FluidParticle particle = fluid.GetParticle(i);
 				
 				// Assign properties
-				body.gameObject.SetActive(particle.enabled);
+                if (body != null) // Fluvio was throwing a fit about accessing destoryed objects
+				    body.gameObject.SetActive(particle.enabled);
 				
 				if (body.isKinematic) body.isKinematic = false;
 				

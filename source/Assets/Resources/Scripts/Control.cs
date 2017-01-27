@@ -191,7 +191,7 @@ public class Control : MonoBehaviour {
 		Debug.Log(toPrint);*/
 
 		string message = "Client " + clients.IndexOf (read.Socket) + " says: " + clientSaid;
-		Debug.Log (message);
+        //Debug.Log (message);
 		//process the incoming text and store in the message queue
 		clientSaid = bufferUnfinished + clientSaid;
 		//Debug.Log("new message is " + clientSaid);
@@ -202,7 +202,7 @@ public class Control : MonoBehaviour {
 		{
 			bufferUnfinished = allCommands[allCommands.Count-1];
 			allCommands.RemoveAt((allCommands.Count)-1);
-			Debug.Log (allCommands.Count);
+            //Debug.Log (allCommands.Count);
 		}		
 		foreach (String cmd in allCommands)
 		{

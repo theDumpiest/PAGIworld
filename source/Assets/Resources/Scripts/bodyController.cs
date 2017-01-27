@@ -656,18 +656,18 @@ public class bodyController : worldObject {
 			switch (firstMsg.messageType)
 			{
 			case AIMessage.AIMessageType.other:
-				Debug.Log("received unrecognized command from client connection " + firstMsg.stringContent);
+                //Debug.Log("received unrecognized command from client connection " + firstMsg.stringContent);
 				outgoingMessages.Add("UnrecognizedCommandError:" + firstMsg.stringContent.Trim() + "\n");
 				break;
 			case AIMessage.AIMessageType.createItem:
-				Debug.Log("Received command to create item");
+                //Debug.Log("Received command to create item");
 				Dictionary<string,System.Object> dd = (Dictionary<string,System.Object>)firstMsg.detail;
 				string wName = (string)dd["name"];
 				customItemController cic = Instantiate(emptyblock, new Vector3(), new Quaternion()) as customItemController;
 				if (!cic.initialize((string)dd["filePath"], wName, new Vector2((float)dd["x"], (float)dd["y"]),
 				               (float)dd["rotation"], (float)dd["endorphins"], (float)dd["mass"], (int)dd["friction"], (int)dd["kinematic"]))
 				{
-					Debug.Log("file " + (string)dd["filePath"] + " not found");
+                    //Debug.Log("file " + (string)dd["filePath"] + " not found");
 					outgoingMessages.Add("createItem,"+(string)dd["name"]+",FAILED,fileNotFound\n");
 				}
 				else
@@ -686,7 +686,7 @@ public class bodyController : worldObject {
 				}
 				break;
 			case AIMessage.AIMessageType.say:
-				Debug.Log ("Received command to say " + firstMsg.otherStrings[1]);
+                //Debug.Log ("Received command to say " + firstMsg.otherStrings[1]);
 				updateCustomItems();
 				//create item
 				speechBubbleController sbc = Instantiate(emptyBubble, new Vector3(), new Quaternion()) as speechBubbleController;
@@ -728,7 +728,7 @@ public class bodyController : worldObject {
 				break;
 
 			case AIMessage.AIMessageType.addForceToItem:
-				Debug.Log ("Received command to addForceToItem");
+                //Debug.Log ("Received command to addForceToItem");
 				updateCustomItems();
 				//find the item to add force to, add it
 				if (!customItems.ContainsKey(firstMsg.stringContent))
@@ -751,7 +751,7 @@ public class bodyController : worldObject {
 				}
 				break;
 			case AIMessage.AIMessageType.getInfoAboutItem:
-				Debug.Log ("Received command to getInfoAboutItem");
+                //Debug.Log ("Received command to getInfoAboutItem");
 				//find the item to add force to, add it
 				if (!customItems.ContainsKey(firstMsg.stringContent))
 				{
@@ -775,7 +775,7 @@ public class bodyController : worldObject {
 				}
 				break;
 			case AIMessage.AIMessageType.destroyItem:
-				Debug.Log ("Received command to destroyItem");
+                //Debug.Log ("Received command to destroyItem");
 				//find the item to add force to, add it
 				if (!customItems.ContainsKey(firstMsg.stringContent))
 				{
@@ -797,12 +797,12 @@ public class bodyController : worldObject {
 				}
 				break;
 			case AIMessage.AIMessageType.print:
-				Debug.Log("received command to print message");
-				Debug.Log("AI-side says: " + firstMsg.stringContent);
+                //Debug.Log("received command to print message");
+                //Debug.Log("AI-side says: " + firstMsg.stringContent);
 				outgoingMessages.Add("print,OK\n");
 				break;
 			case AIMessage.AIMessageType.findObj:
-				Debug.Log("received message to find object: " + firstMsg.stringContent);
+                //Debug.Log("received message to find object: " + firstMsg.stringContent);
 				string findObjToReturn = "findObj," + firstMsg.stringContent;
 				string searchType = ((string)firstMsg.detail).Trim();
 				//Debug.Log(searchType);
@@ -829,7 +829,7 @@ public class bodyController : worldObject {
 				break;
 				
 			case AIMessage.AIMessageType.loadTask:
-				Debug.Log("received message to load new task");
+                //Debug.Log("received message to load new task");
 				findObjToReturn = "loadTask," + firstMsg.stringContent.Trim();
 				//remove all world objects currently in scene (except for body/hands)
 				worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
@@ -905,7 +905,7 @@ public class bodyController : worldObject {
 				Reflex re = null;
 				foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
 				{
-					Debug.Log("comparing " + R.reflexName + " to " + firstMsg.stringContent);
+                    //Debug.Log("comparing " + R.reflexName + " to " + firstMsg.stringContent);
 					if (R.reflexName.Trim() == firstMsg.stringContent.Trim())
 					{
 						re = R;
@@ -939,7 +939,7 @@ public class bodyController : worldObject {
 				break;
 			
 			case AIMessage.AIMessageType.dropItem:
-				Debug.Log("received command to create " + firstMsg.stringContent + " at " + firstMsg.vectorContent);
+                //Debug.Log("received command to create " + firstMsg.stringContent + " at " + firstMsg.vectorContent);
 				//if required, there is additional content at firstMsg.detail
 				//find the asset that matches the name
 				bool loaded = false;
@@ -960,7 +960,7 @@ public class bodyController : worldObject {
 					outgoingMessages.Add("dropItem," + firstMsg.stringContent + ",OK\n");
 				break;
 			case AIMessage.AIMessageType.addForce:
-				Debug.Log("executing addForce command: " + firstMsg.messageType.ToString());
+                //Debug.Log("executing addForce command: " + firstMsg.messageType.ToString());
 				//do we need to evaluate the force value, e.g. if there is a function?
 				switch (firstMsg.stringContent)
 				{
@@ -970,7 +970,7 @@ public class bodyController : worldObject {
 						Debug.Log("creating string ("+numToSend.ToString()+")");
 						for (int i=0; i<numToSend; i++)
 							s += "X";*/
-						Debug.Log("got TEST msg: " + firstMsg.function1.evaluate(getSensorAspectValue));
+                        //Debug.Log("got TEST msg: " + firstMsg.function1.evaluate(getSensorAspectValue));
 						//outgoingMessages.Add(s+'\n');
 						break;
 					/*LHV,LHH - Left hand vertical and horizontal. v is the amount of force (positive or negative) to add in each dimension.
@@ -1027,7 +1027,7 @@ public class bodyController : worldObject {
 					case "BMV":
 						f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,firstMsg.function1.evaluate(getSensorAspectValue));//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
 						GetComponent<Rigidbody2D>().AddForce(f);
-						Debug.Log("added f: " + f.y);
+                        //Debug.Log("added f: " + f.y);
 						outgoingMessages.Add("BMV,1\n");
 					break;
 					case "BMvec":
@@ -1070,7 +1070,7 @@ public class bodyController : worldObject {
 				}
 				break;
 			case AIMessage.AIMessageType.sensorRequest:
-				Debug.Log("checking sensor value " + firstMsg.ToString());
+                //Debug.Log("checking sensor value " + firstMsg.ToString());
 				switch (firstMsg.stringContent[0])
 				{
 					case 'M': //a full map of the visual field
@@ -1091,7 +1091,7 @@ public class bodyController : worldObject {
 								}
 							}
 							sb[sb.Length-1] = '\n';
-							Debug.Log("msg is " + sb.ToString());
+                            //Debug.Log("msg is " + sb.ToString());
 							outgoingMessages.Add(sb.ToString());
 						}
 						else if (firstMsg.stringContent.Trim() == "MPN") //peripheral visual field (names only)
@@ -1111,7 +1111,7 @@ public class bodyController : worldObject {
 									count++;
 								}
 							}
-							Debug.Log(count);
+                            //Debug.Log(count);
 							sb[sb.Length-1] = '\n';
 							outgoingMessages.Add(sb.ToString());
 						}
@@ -1452,7 +1452,7 @@ public class bodyController : worldObject {
 						{
 							//connect it at that point
 							worldObject obj = goArray[i];
-							Debug.Log("connecting hand to " + obj + " at " + handRigidBody.position);
+                            //Debug.Log("connecting hand to " + obj + " at " + handRigidBody.position);
 							handJoint[handIndex] = obj.gameObject.AddComponent<DistanceJoint2D>();
 							handJoint[handIndex].anchor = obj.GetComponent<Rigidbody2D>().GetPoint(handRigidBody.position);
 							//Debug.Log(obj.rigidbody2D.GetPoint(rightHandRigidBody.position));
@@ -1488,6 +1488,6 @@ public class bodyController : worldObject {
 	
 	void OnTouchedRewardOrPunishment(float msg)
 	{
-		Debug.Log("endorphins " + msg);
+        //Debug.Log("endorphins " + msg);
 	}
 }
