@@ -803,7 +803,7 @@ public class bodyController : worldObject {
 				break;
 			case AIMessage.AIMessageType.findObj:
 				Debug.Log("received message to find object: " + firstMsg.stringContent);
-				string toReturn = "findObj," + firstMsg.stringContent;
+				string findObjToReturn = "findObj," + firstMsg.stringContent;
 				string searchType = ((string)firstMsg.detail).Trim();
 				//Debug.Log(searchType);
 				if (searchType == "D" || searchType == "PD")
@@ -813,7 +813,7 @@ public class bodyController : worldObject {
 					{
 						v.updateSensor();
 						if (v.name.Trim() == firstMsg.stringContent.Trim())
-							toReturn += ",V" + v.indexX.ToString() + "." + v.indexY.ToString();
+							findObjToReturn += ",V" + v.indexX.ToString() + "." + v.indexY.ToString();
 					}
 				}
 				if (searchType == "P" || searchType == "PD")
@@ -822,15 +822,15 @@ public class bodyController : worldObject {
 					{
 						p.updateSensor();
 						if (p.name.Trim() == firstMsg.stringContent.Trim())
-							toReturn += ",P" + p.indexX.ToString() + "." + p.indexY.ToString();
+							findObjToReturn += ",P" + p.indexX.ToString() + "." + p.indexY.ToString();
 					}
 				}
-				outgoingMessages.Add(toReturn + "\n");
+				outgoingMessages.Add(findObjToReturn + "\n");
 				break;
 				
 			case AIMessage.AIMessageType.loadTask:
 				Debug.Log("received message to load new task");
-				toReturn = "loadTask," + firstMsg.stringContent.Trim();
+				findObjToReturn = "loadTask," + firstMsg.stringContent.Trim();
 				//remove all world objects currently in scene (except for body/hands)
 				worldObject[] goArray = UnityEngine.MonoBehaviour.FindObjectsOfType(typeof(worldObject)) as worldObject[];
 				List<string> doNotRemove = new List<string>() { "leftHand", "rightHand", "mainBody" };
@@ -850,11 +850,11 @@ public class bodyController : worldObject {
 				{
 					string errDesc = e.ToString().Replace('\n',';');
 					errDesc = errDesc.Replace('\r',' ');
-					outgoingMessages.Add(toReturn + ",ERR," + errDesc + "\n");
+					outgoingMessages.Add(findObjToReturn + ",ERR," + errDesc + "\n");
 					loadedOk = false;
 				}
 				if (loadedOk)
-					outgoingMessages.Add(toReturn + ",OK\n");
+					outgoingMessages.Add(findObjToReturn + ",OK\n");
 				break;
 			
 			case AIMessage.AIMessageType.setState:
@@ -1133,8 +1133,8 @@ public class bodyController : worldObject {
 						}
 					break;
 					case 'S': //speed sensor
-						Vector2 v = GetComponent<Rigidbody2D>().GetRelativePointVelocity(Vector2.zero);
-						outgoingMessages.Add ("S," + v.x.ToString () + "," + v.y.ToString() + "\n");
+						Vector2 sV = GetComponent<Rigidbody2D>().GetRelativePointVelocity(Vector2.zero);
+						outgoingMessages.Add ("S," + sV.x.ToString () + "," + sV.y.ToString() + "\n");
 						break;
 					case 'L': //L0-L4, or LP
 						if (firstMsg.stringContent[1]=='P')
@@ -1170,35 +1170,35 @@ public class bodyController : worldObject {
 					case 'V': //visual sensor V0.0 - V30.20
 						string[] tmp = firstMsg.stringContent.Substring(1).Split('.');
 						//Debug.Log(tmp[0] + ", " + tmp[1]);
-						int x = int.Parse(tmp[0]);
-						int y = int.Parse(tmp[1]);
-						if (x>=numVisualSensorsX || y>=numVisualSensorsY)
+						int vX = int.Parse(tmp[0]);
+						int vY = int.Parse(tmp[1]);
+						if (vX>=numVisualSensorsX || vY>=numVisualSensorsY)
 						{
 							outgoingMessages.Add("sensorRequest," + firstMsg.stringContent + ",ERR:IndexOutOfRange\n");
 						}
-						visualSensor s = visualSensors[x,y];
-						s.updateSensor();
+						visualSensor vVS = visualSensors[vX,vY];
+						vVS.updateSensor();
 						string response = firstMsg.stringContent.Trim();
-						for (int i=0; i<s.vq.Length; i++)
-							response += "," + s.vq[i].ToString();
-						response += "," + s.type + "," + s.name + "\n";
+						for (int i=0; i<vVS.vq.Length; i++)
+							response += "," + vVS.vq[i].ToString();
+						response += "," + vVS.type + "," + vVS.name + "\n";
 						outgoingMessages.Add(response);
 					break;
 					case 'P': //peripheral sensor V0.0 - V15.10
 						tmp = firstMsg.stringContent.Substring(1).Split('.');
 						//Debug.Log(tmp[0] + ", " + tmp[1]);
-						x = int.Parse(tmp[0]);
-						y = int.Parse(tmp[1]);
-						if (x>=numPeripheralSensorsX || y>=numPeripheralSensorsY)
+						vX = int.Parse(tmp[0]);
+						vY = int.Parse(tmp[1]);
+						if (vX>=numPeripheralSensorsX || vY>=numPeripheralSensorsY)
 						{
 							outgoingMessages.Add("sensorRequest," + firstMsg.stringContent + ",ERR:IndexOutOfRange\n");
 						}
-						s = peripheralSensors[x,y];
-						s.updateSensor();
+						vVS = peripheralSensors[vX,vY];
+						vVS.updateSensor();
 						response = firstMsg.stringContent.Trim();
-						for (int i=0; i<s.vq.Length; i++)
-							response += "," + s.vq[i].ToString();
-						response += "," + s.type + "," + s.name + "\n";
+						for (int i=0; i<vVS.vq.Length; i++)
+							response += "," + vVS.vq[i].ToString();
+						response += "," + vVS.type + "," + vVS.name + "\n";
 						outgoingMessages.Add(response);
 					break;
 					case 'A': //rotation sensor
