@@ -585,6 +585,38 @@ public class AIMessage
 		if (s.Trim()=="")
 			throw new Exception("ERR: Received string that was nothing but whitespace!");
 
+
+
+
+
+
+        // TESTING
+        // Vector items must be of the form: "<property name> : { "x" : <val>, "y" : <val> }
+        // Vector arrays are of the form 
+        // "<property name>" : [ { "x" : <val>, "y" : <val> }, { "x" : <val>, "y" : <val> }, ... ]
+        if (s[0] == '{')
+        {
+            Debug.Log(s);
+            JSONAIMessage message = JsonUtility.FromJson<JSONAIMessage>(s);
+
+            if (message.Command == "dropItem")
+            {
+                DropItem drop = JsonUtility.FromJson<DropItem>(s);
+                Debug.Log(drop.Command);
+                Debug.Log("LOCATIONS: ");
+                foreach (Vector2 vec in drop.Locations)
+                {
+                    Debug.Log(vec);
+                }
+            }
+            Debug.Log(message.Command);
+        }
+
+
+
+
+
+
 		string[] clientArgs = s.Split(',');
 		AIMessage a = new AIMessage(AIMessage.AIMessageType.other, "ERR: Unrecognized Command. Received string:\"" + s + "\"\n", 100f, "");
 		clientArgs[0] = clientArgs[0].Trim();
@@ -876,4 +908,46 @@ public class AIMessage
 	{
 		return "{" + messageType.ToString() + ", " + stringContent + ", " + floatContent.ToString() + "}";
 	}
+}
+
+[Serializable]
+public class JSONAIMessage
+{
+    public enum JSONAIMessageType
+    {
+        sensorRequest, addForce, dropItem, print, say,
+        setState, setReflex, removeReflex, getStates, getReflexes, findObj,
+        createItem, addForceToItem, getInfoAboutItem, destroyItem,
+        establishConnection, removeConnection, loadTask, other
+    }
+    public JSONAIMessageType messageType;
+
+    // Command associated with a message type
+    public string Command;
+
+    // For testing purposes only
+    public JSONAIMessage()
+    {
+
+    }
+
+    public static JSONAIMessage fromString(string s)
+    {
+        return null;
+    }
+
+}
+
+[Serializable]
+public class DropItem
+{
+    public string Command;
+    public int X;
+    public int Y;
+    public Vector2[] Locations;
+    public string Detail;
+
+    public DropItem()
+    {
+    }
 }
