@@ -603,11 +603,6 @@ public class AIMessage
             {
                 DropItem drop = JsonUtility.FromJson<DropItem>(s);
                 Debug.Log(drop.Command);
-                Debug.Log("LOCATIONS: ");
-                foreach (Vector2 vec in drop.Locations)
-                {
-                    Debug.Log(vec);
-                }
             }
             Debug.Log(message.Command);
         }
@@ -911,17 +906,10 @@ public class AIMessage
 }
 
 [Serializable]
+// This class is used to pull the command out of the json in order
+// to figure out what type of instance to create
 public class JSONAIMessage
 {
-    public enum JSONAIMessageType
-    {
-        sensorRequest, addForce, dropItem, print, say,
-        setState, setReflex, removeReflex, getStates, getReflexes, findObj,
-        createItem, addForceToItem, getInfoAboutItem, destroyItem,
-        establishConnection, removeConnection, loadTask, other
-    }
-    public JSONAIMessageType messageType;
-
     // Command associated with a message type
     public string Command;
 
@@ -931,23 +919,146 @@ public class JSONAIMessage
 
     }
 
-    public static JSONAIMessage fromString(string s)
-    {
-        return null;
-    }
-
 }
 
 [Serializable]
 public class DropItem
 {
     public string Command;
-    public int X;
-    public int Y;
-    public Vector2[] Locations;
+    public Vector2 Position;
     public string Detail;
 
-    public DropItem()
-    {
-    }
+    public DropItem() {}
 }
+
+[Serializable]
+public class SensorRequest
+{
+    public string Command;
+    public string Sensor;
+
+    public SensorRequest() {}
+}
+
+[Serializable]
+public class Say
+{
+    public string Command;
+    public string Speaker;
+    public string Text;
+    public float Duration;
+    public Vector2 Position;
+
+    public Say() {}
+}
+
+[Serializable]
+public class Print
+{
+    public string Command;
+    public string Text;
+
+    public Print() {}
+}
+
+[Serializable]
+public class LoadTask
+{
+    public string Command;
+    public string File;
+
+    public LoadTask() {}
+}
+
+[Serializable]
+public class FindObj
+{
+    public string Command;
+    public string Item;
+    public string Model;
+
+    public FindObj() {}
+}
+
+[Serializable]
+public class AddForce
+{
+    public string Command;
+    public string Effector;
+    // Needs both force and direction specific
+    // so it can handle one input or two
+    public float Force;
+    public float VerticlForce;
+    public float HorizontalForce;
+
+    public AddForce() {}
+}
+
+[Serializable]
+public class SetState
+{
+    public string Command;
+    public string Name;
+    public int Duration;
+    public State State { get; set; }
+
+    public SetState() {}
+}
+
+
+
+
+// TODO: FINISH IMPLEMENTATION
+[Serializable]
+public class SetReflex
+{
+    public string Command;
+    public string Name;
+    public string[] Conditions;
+    public Reflex ReflexConditions { get; set; }
+}
+
+
+
+
+[Serializable]
+public class RemoveReflex
+{
+    public string Command;
+    public string Reflex;
+
+    public RemoveReflex() {}
+}
+
+[Serializable]
+public class GetActiveStates
+{
+    public string Command;
+
+    public GetActiveStates() {}
+}
+
+[Serializable]
+public class GetActiveReflexes
+{
+    public string Command;
+
+    public GetActiveReflexes() {}
+}
+
+[Serializable]
+public class CreateItem
+{
+    public string Command;
+    public string Name;
+    public string FilePath;
+    public Vector2 Position;
+    public float Mass;
+    public int Friction;
+    public float Rotation;
+    public float Endorphins;
+    public int Kinematic;
+
+    public CreateItem() {}
+}
+
