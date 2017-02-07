@@ -206,18 +206,37 @@ public class Control : MonoBehaviour {
 		}		
 		foreach (String cmd in allCommands)
 		{
-			AIMessage a;
-			try {
-				a = AIMessage.fromString(cmd);
-			}
-			catch(Exception e)
-			{
-				Debug.Log("Could not parse message due to error. Skipping.");
-				Debug.Log(e);
-				GlobalVariables.outgoingMessages.Add("ERR,formattingError\n");
-				continue;
-			}
-			bodyInterface.messageQueue.Add(a);
+            // TESTING
+            JSONAIMessage a;
+            try
+            {
+                a = JSONAIMessage.fromString(cmd);
+            }
+            catch(Exception e)
+            {
+                Debug.Log("Could not parse message due to error. Skipping.");
+                Debug.Log(e);
+                GlobalVariables.outgoingMessages.Add("ERR,formattingError\n");
+                continue;
+            }
+
+
+
+
+
+
+            //AIMessage a;
+            //try {
+            //    a = AIMessage.fromString(cmd);
+            //}
+            //catch(Exception e)
+            //{
+            //    Debug.Log("Could not parse message due to error. Skipping.");
+            //    Debug.Log(e);
+            //    GlobalVariables.outgoingMessages.Add("ERR,formattingError\n");
+            //    continue;
+            //}
+			bodyInterface.messageQueueJ.Add(a);
             //Debug.Log("added to message queue: " + a.messageType.ToString() + ", " + a.stringContent);
 		}
 	}

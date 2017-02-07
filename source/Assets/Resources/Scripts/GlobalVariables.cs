@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 public class GlobalVariables : MonoBehaviour {
 
@@ -24,6 +25,17 @@ public class GlobalVariables : MonoBehaviour {
 	public static ThreadSafeList<Reflex> activeReflexes = new ThreadSafeList<Reflex>();
 	
 	public static ThreadSafeList<AIMessage> messageQueue = new ThreadSafeList<AIMessage>();
+
+
+
+    // TESTING
+    public static ThreadSafeList<JSONAIMessage> messageQueueJ = new ThreadSafeList<JSONAIMessage>();
+
+
+
+
+
+
 	public static ThreadSafeList<string> outgoingMessages = new ThreadSafeList<string>();
 	
 	public static bool spokenCommandFieldVisible = false; //whether or not the command box is visible
@@ -596,15 +608,32 @@ public class AIMessage
         // "<property name>" : [ { "x" : <val>, "y" : <val> }, { "x" : <val>, "y" : <val> }, ... ]
         if (s[0] == '{')
         {
-            Debug.Log(s);
-            JSONAIMessage message = JsonUtility.FromJson<JSONAIMessage>(s);
 
-            if (message.Command == "dropItem")
-            {
-                DropItem drop = JsonUtility.FromJson<DropItem>(s);
-                Debug.Log(drop.Command);
-            }
-            Debug.Log(message.Command);
+            DumpMessage dm = JSONAIMessage.fromString(s) as DumpMessage;
+            //Debug.Log(s);
+            //JSONAIMessage message = JsonUtility.FromJson<JSONAIMessage>(s);
+
+            //if (message.Command == "dropItem")
+            //{
+            //    DropItem drop = JsonUtility.FromJson<DropItem>(s);
+            //    Debug.Log(drop.Command);
+            //    Debug.Log(drop.Name);
+            //    Debug.Log(drop.Position);
+            //}
+
+            //else if (message.Command == "setReflex")
+            //{
+            //    DumpMessage dM = JsonUtility.FromJson<DumpMessage>(s);
+
+            //    SetReflex sR = JSONAIMessage.CreateMessage(dM) as SetReflex;
+
+            //    foreach (JSONAIMessage m in sR.ProperActions)
+            //    {
+            //        DropItem d = (DropItem)m;
+
+            //        Debug.Log(d.Position);
+            //    }
+            //}
         }
 
 
@@ -913,37 +942,329 @@ public class JSONAIMessage
     // Command associated with a message type
     public string Command;
 
-    // For testing purposes only
-    public JSONAIMessage()
+    public static JSONAIMessage CreateMessage(DumpMessage m)
     {
+        string command = m.Command;
 
+        if (command == null || command == "")
+        {
+            throw new Exception("All Commands must have Command Property");
+        }
+
+        switch (command)
+        {
+            case "dropItem":
+                DropItem dI = new DropItem() 
+                {
+                    Command = command,
+                    Name = m.Name,
+                    Position = m.Position,
+                    Detail = m.Detail
+                };
+
+                if (dI.Name == null || dI.Name == "" || dI.Position == null)
+                {
+                    throw new Exception("Incorrect # of arguments in command");
+                }
+                return dI;
+            case "sensorRequest":
+                SensorRequest sR = new SensorRequest()
+                {
+                    Command = command,
+                    Sensor = m.Sensor
+                };
+                if (sR.Sensor == null || sR.Sensor == "")
+                {
+                    throw new Exception("Sensor name cannot be empty.");
+                }
+                return sR;
+            case "say":
+                Say s = new Say()
+                {
+                    Command = command,
+                    Speaker = m.Speaker,
+                    Duration = m.Duration,
+                    Text = m.Text,
+                    Position = m.Position
+                };
+                if (s.Speaker == null || s.Duration == null || s.Text == null || s.Position == null)
+                {
+                    throw new Exception("Incorrect number of arguments.");
+                }
+                return s;
+            case "print":
+                Print p = new Print()
+                {
+                    Command = command,
+                    Text = m.Text
+                };
+                return p;
+            case "loadTask":
+                LoadTask lT = new LoadTask()
+                {
+                    Command = command,
+                    File = m.File
+                };
+                if (lT.File == null || lT.File == "")
+                {
+                    throw new Exception("Incorrect Number of arguments");
+                }
+                return lT;
+            case "findObj":
+                FindObj fO = new FindObj()
+                {
+                    Command = command,
+                    Item = m.Item,
+                    Model = m.Model
+                };
+                if (fO.Item == "" || fO.Item == null || fO.Model == "" || fO.Model == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return fO;
+            case "addForce":
+                AddForce aF = new AddForce()
+                {
+                    Command = command,
+                    Effector = m.Effector,
+                    Force = m.Force,
+                    HorizontalForce = m.HorizontalForce,
+                    VerticalForce = m.VerticalForce
+                };
+                if(aF.Effector == null || aF.Force == null ||
+                    (aF.HorizontalForce == null ^ aF.VerticalForce == null))
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return aF;
+            case "setState":
+                SetState sS = new SetState()
+                {
+                    Command = command,
+                    Name = m.Name,
+                    StateDuration = m.StateDuration
+                };
+
+                if (sS.Name == null || sS.StateDuration == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+
+                if (m.StateDuration == 0)
+                {
+                    sS.State = new State(sS.Name, TimeSpan.Zero);
+                }
+                else if (m.StateDuration < 0)
+                {
+                    sS.State = new State(sS.Name, TimeSpan.MaxValue);
+                }
+
+                else
+                {
+                    sS.State = new State(sS.Name, new TimeSpan(0, 0, 0, 0, m.StateDuration));
+                }
+                return sS;
+            case "setReflex":
+                SetReflex sRe = new SetReflex()
+                {
+                    Command = command,
+                    Name = m.Name,
+                    ProperStateConditions = m.StateConditions.Select(x => new StateConditionJ()
+                    {
+                        StateName = x.StateName,
+                        Negated = x.Negated
+                    }).ToArray(),
+                    ProperSensoryConditions = m.SensoryConditions.Select(x => new SensoryConditionJ()
+                    {
+                        Sensor = x.Sensor,
+                        Comparator = x.Comparator,
+                        Value = x.Value
+                    }).ToArray(),
+                    ProperActions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToArray()
+                };
+                if (sRe.Name == null || (sRe.ProperSensoryConditions == null && sRe.ProperStateConditions == null) ||
+                    sRe.ProperActions == null)
+                {
+                    throw new Exception("Incorrect number of arguments");                    
+                }
+                return sRe;
+            case "removeReflex":
+                RemoveReflex rR = new RemoveReflex()
+                {
+                    Command = m.Command,
+                    Reflex = m.Reflex
+                };
+                if (rR.Reflex == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return rR;
+            case "getActiveStates":
+                GetActiveStates gAS = new GetActiveStates()
+                {
+                    Command = command
+                };
+                return gAS;
+            case "getActiveReflexes":
+                GetActiveReflexes gAR = new GetActiveReflexes()
+                {
+                    Command = command
+                };
+                return gAR;
+            case "createItem":
+                CreateItem cI = new CreateItem()
+                {
+                    Command = command,
+                    Name = m.Name,
+                    FilePath = m.FilePath,
+                    Position = m.Position,
+                    Mass = m.Mass,
+                    Friction = m.Friction,
+                    Rotation = m.Rotation,
+                    Endorphins = m.Endorphins,
+                    Kinematic = m.Kinematic
+                };
+                if (cI.Name == null || cI.FilePath == null || cI.Position == null || cI.Mass == null || cI.Friction == null || cI.Rotation == null || cI.Endorphins == null || cI.Kinematic == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return cI;
+            case "addForceToItem":
+                AddForceToItem aFTI = new AddForceToItem()
+                {
+                    Command = command,
+                    Name = m.Name,
+                    ForceVector = m.ForceVector,
+                    Rotation = m.Rotation
+                };
+                if (aFTI.Name == null || aFTI.ForceVector == null || aFTI.Rotation == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return aFTI;
+            case "getInfoAboutItem":
+                GetInfoAboutItem gIAI = new GetInfoAboutItem()
+                {
+                    Command = command,
+                    Name = m.Name
+                };
+                if (gIAI.Name == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return gIAI;
+            case "destroyItem":
+                DestroyItem dIt = new DestroyItem()
+                {
+                    Command = command,
+                    Name = m.Name
+                };
+                if (dIt.Name == null)
+                {
+                    throw new Exception("Incorrect number of arguments");
+                }
+                return dIt;
+            default:
+                ErrorMessage em = new ErrorMessage()
+                {
+                    Command = "BadMessage",
+                    Message = "Could not understand command"
+                };
+                return em;
+        }
     }
 
+    public static JSONAIMessage fromString(string s)
+    {
+        if (s.Trim() == "")
+        {
+            throw new Exception("ERR: Received string that was nothing but whitespace!");
+        }
+
+        try
+        {
+            DumpMessage dump = JsonUtility.FromJson<DumpMessage>(s);
+
+            Debug.Log(dump.Command);
+            
+            return JSONAIMessage.CreateMessage(dump);
+        }
+        catch (ArgumentException e)
+        {
+            Debug.Log("ARGUMENTEXCEPTION");
+            return new ErrorMessage() {
+                Message = "Unable to parse command"
+            };
+        }
+    }
 }
 
 [Serializable]
-public class DropItem
+public class DumpMessage : JSONAIMessage
 {
-    public string Command;
+    public string Name;
+    public Vector2 Position;
+    public string Detail;
+    public string Sensor;
+    public string Speaker;
+    public string Text;
+    public float Duration;
+    public string File;
+    public string Effector;
+    public float Force;
+    public float VerticalForce;
+    public float HorizontalForce;
+    public int StateDuration;
+    public string Item;
+    public string Model;
+    public State State { get; set; }
+    public SensoryConditionJ[] ProperSensoryConditions;
+    public StateConditionJ[] ProperStateConditions;
+    public JSONAIMessage[] ProperActions;
+    public DumpMessage[] SensoryConditions;
+    public DumpMessage[] StateConditions;
+    public DumpMessage[] Actions;
+    public string Comparator;
+    public float Value;
+    public string StateName;
+    public bool Negated;
+    public string Reflex;
+    public string FilePath;
+    public float Mass;
+    public int Friction;
+    public float Rotation;
+    public float Endorphins;
+    public int Kinematic;
+    public Vector2 ForceVector;
+}
+
+[Serializable]
+public class ErrorMessage : JSONAIMessage
+{
+    public string Message;
+}
+
+[Serializable]
+public class DropItem : JSONAIMessage
+{
+    public string Name; 
     public Vector2 Position;
     public string Detail;
 
-    public DropItem() {}
+    public DropItem() { }
 }
 
 [Serializable]
-public class SensorRequest
+public class SensorRequest : JSONAIMessage
 {
-    public string Command;
     public string Sensor;
 
     public SensorRequest() {}
 }
 
 [Serializable]
-public class Say
+public class Say : JSONAIMessage
 {
-    public string Command;
     public string Speaker;
     public string Text;
     public float Duration;
@@ -953,27 +1274,24 @@ public class Say
 }
 
 [Serializable]
-public class Print
+public class Print : JSONAIMessage
 {
-    public string Command;
     public string Text;
 
     public Print() {}
 }
 
 [Serializable]
-public class LoadTask
+public class LoadTask : JSONAIMessage
 {
-    public string Command;
     public string File;
 
     public LoadTask() {}
 }
 
 [Serializable]
-public class FindObj
+public class FindObj : JSONAIMessage
 {
-    public string Command;
     public string Item;
     public string Model;
 
@@ -981,75 +1299,78 @@ public class FindObj
 }
 
 [Serializable]
-public class AddForce
+public class AddForce : JSONAIMessage
 {
-    public string Command;
     public string Effector;
     // Needs both force and direction specific
     // so it can handle one input or two
     public float Force;
-    public float VerticlForce;
+    public float VerticalForce;
     public float HorizontalForce;
 
     public AddForce() {}
 }
 
 [Serializable]
-public class SetState
+public class SetState : JSONAIMessage
 {
-    public string Command;
     public string Name;
-    public int Duration;
+    public int StateDuration;
     public State State { get; set; }
 
     public SetState() {}
 }
 
-
-
-
-// TODO: FINISH IMPLEMENTATION
 [Serializable]
-public class SetReflex
+public class SetReflex : JSONAIMessage
 {
-    public string Command;
     public string Name;
-    public string[] Conditions;
-    public Reflex ReflexConditions { get; set; }
+    public DumpMessage[] SensoryConditions;
+    public DumpMessage[] StateConditions;
+    public DumpMessage[] Actions;
+    public SensoryConditionJ[] ProperSensoryConditions;
+    public StateConditionJ[] ProperStateConditions;
+    public JSONAIMessage[] ProperActions;
 }
 
-
-
+[Serializable]
+public class SensoryConditionJ
+{
+    public string Sensor;
+    public string Comparator;
+    public float Value;
+}
 
 [Serializable]
-public class RemoveReflex
+public class StateConditionJ
 {
-    public string Command;
+    public string StateName;
+    public bool Negated;
+}
+
+[Serializable]
+public class RemoveReflex : JSONAIMessage
+{
     public string Reflex;
 
     public RemoveReflex() {}
 }
 
 [Serializable]
-public class GetActiveStates
+public class GetActiveStates : JSONAIMessage
 {
-    public string Command;
-
     public GetActiveStates() {}
 }
 
 [Serializable]
-public class GetActiveReflexes
+public class GetActiveReflexes : JSONAIMessage
 {
-    public string Command;
-
     public GetActiveReflexes() {}
 }
 
 [Serializable]
-public class CreateItem
+public class CreateItem : JSONAIMessage
 {
-    public string Command;
     public string Name;
     public string FilePath;
     public Vector2 Position;
@@ -1060,5 +1381,25 @@ public class CreateItem
     public int Kinematic;
 
     public CreateItem() {}
+}
+
+[Serializable]
+public class AddForceToItem : JSONAIMessage
+{
+    public string Name;
+    public Vector2 ForceVector;
+    public float Rotation;
+}
+
+[Serializable]
+public class GetInfoAboutItem : JSONAIMessage
+{
+    public string Name;
+}
+
+[Serializable]
+public class DestroyItem : JSONAIMessage
+{
+    public string Name;
 }
 
