@@ -928,10 +928,6 @@ public class AIMessage
 		timeCreated = DateTime.Now;
 	}
 	
-	public override string ToString ()
-	{
-		return "{" + messageType.ToString() + ", " + stringContent + ", " + floatContent.ToString() + "}";
-	}
 }
 
 [Serializable]
@@ -939,8 +935,14 @@ public class AIMessage
 // to figure out what type of instance to create
 public class JSONAIMessage
 {
+    public enum MessageType { Error, DropItem, SensorRequest, Say, 
+        Print, LoadTask, FindObj, AddForce, SetState, SetReflex, RemoveReflex,
+        GetActiveStates, GetActiveReflexes, CreateItem, AddForceToItem, 
+        GetInfoAboutItem, DestroyItem }
+
     // Command associated with a message type
     public string Command;
+    public JSONAIMessage.MessageType Type;
 
     public static JSONAIMessage CreateMessage(DumpMessage m)
     {
@@ -957,6 +959,7 @@ public class JSONAIMessage
                 DropItem dI = new DropItem() 
                 {
                     Command = command,
+                    Type = MessageType.DropItem,
                     Name = m.Name,
                     Position = m.Position,
                     Detail = m.Detail
@@ -971,6 +974,7 @@ public class JSONAIMessage
                 SensorRequest sR = new SensorRequest()
                 {
                     Command = command,
+                    Type = MessageType.SensorRequest,
                     Sensor = m.Sensor
                 };
                 if (sR.Sensor == null || sR.Sensor == "")
@@ -982,6 +986,7 @@ public class JSONAIMessage
                 Say s = new Say()
                 {
                     Command = command,
+                    Type = MessageType.Say,
                     Speaker = m.Speaker,
                     Duration = m.Duration,
                     Text = m.Text,
@@ -996,6 +1001,7 @@ public class JSONAIMessage
                 Print p = new Print()
                 {
                     Command = command,
+                    Type = MessageType.Print,
                     Text = m.Text
                 };
                 return p;
@@ -1003,6 +1009,7 @@ public class JSONAIMessage
                 LoadTask lT = new LoadTask()
                 {
                     Command = command,
+                    Type = MessageType.LoadTask,
                     File = m.File
                 };
                 if (lT.File == null || lT.File == "")
@@ -1014,6 +1021,7 @@ public class JSONAIMessage
                 FindObj fO = new FindObj()
                 {
                     Command = command,
+                    Type = MessageType.FindObj,
                     Item = m.Item,
                     Model = m.Model
                 };
@@ -1023,14 +1031,34 @@ public class JSONAIMessage
                 }
                 return fO;
             case "addForce":
-                AddForce aF = new AddForce()
+                AddForce aF = null;
+
+                if (m.Force != null)
                 {
-                    Command = command,
-                    Effector = m.Effector,
-                    Force = m.Force,
-                    HorizontalForce = m.HorizontalForce,
-                    VerticalForce = m.VerticalForce
-                };
+                    aF = new AddForce()
+                    {
+                        Command = command,
+                        Type = MessageType.AddForce,
+                        Effector = m.Effector,
+                        Force = fnNode.parseFloat(m.Force)
+
+                    };
+                }
+
+                else
+                {
+                     aF = new AddForce()
+                    {
+                        Command = command,
+                        Type = MessageType.AddForce,
+                        Effector = m.Effector,
+                        HorizontalForce = fnNode.parseFloat(m.HorizontalForce),
+                        VerticalForce = fnNode.parseFloat(m.VerticalForce)
+
+                    };
+                }
+
+                
                 if(aF.Effector == null || aF.Force == null ||
                     (aF.HorizontalForce == null ^ aF.VerticalForce == null))
                 {
@@ -1041,6 +1069,7 @@ public class JSONAIMessage
                 SetState sS = new SetState()
                 {
                     Command = command,
+                    Type = MessageType.SetState,
                     Name = m.Name,
                     StateDuration = m.StateDuration
                 };
@@ -1068,6 +1097,7 @@ public class JSONAIMessage
                 SetReflex sRe = new SetReflex()
                 {
                     Command = command,
+                    Type = MessageType.SetReflex,
                     Name = m.Name,
                     ProperStateConditions = m.StateConditions.Select(x => new StateConditionJ()
                     {
@@ -1092,6 +1122,7 @@ public class JSONAIMessage
                 RemoveReflex rR = new RemoveReflex()
                 {
                     Command = m.Command,
+                    Type = MessageType.RemoveReflex,
                     Reflex = m.Reflex
                 };
                 if (rR.Reflex == null)
@@ -1102,19 +1133,22 @@ public class JSONAIMessage
             case "getActiveStates":
                 GetActiveStates gAS = new GetActiveStates()
                 {
-                    Command = command
+                    Command = command,
+                    Type = MessageType.GetActiveStates
                 };
                 return gAS;
             case "getActiveReflexes":
                 GetActiveReflexes gAR = new GetActiveReflexes()
                 {
-                    Command = command
+                    Command = command,
+                    Type = MessageType.GetActiveReflexes
                 };
                 return gAR;
             case "createItem":
                 CreateItem cI = new CreateItem()
                 {
                     Command = command,
+                    Type = MessageType.CreateItem,
                     Name = m.Name,
                     FilePath = m.FilePath,
                     Position = m.Position,
@@ -1133,6 +1167,7 @@ public class JSONAIMessage
                 AddForceToItem aFTI = new AddForceToItem()
                 {
                     Command = command,
+                    Type = MessageType.AddForceToItem,
                     Name = m.Name,
                     ForceVector = m.ForceVector,
                     Rotation = m.Rotation
@@ -1146,6 +1181,7 @@ public class JSONAIMessage
                 GetInfoAboutItem gIAI = new GetInfoAboutItem()
                 {
                     Command = command,
+                    Type = MessageType.GetInfoAboutItem,
                     Name = m.Name
                 };
                 if (gIAI.Name == null)
@@ -1157,6 +1193,7 @@ public class JSONAIMessage
                 DestroyItem dIt = new DestroyItem()
                 {
                     Command = command,
+                    Type = MessageType.DestroyItem,
                     Name = m.Name
                 };
                 if (dIt.Name == null)
@@ -1168,6 +1205,7 @@ public class JSONAIMessage
                 ErrorMessage em = new ErrorMessage()
                 {
                     Command = "BadMessage",
+                    Type = MessageType.Error,
                     Message = "Could not understand command"
                 };
                 return em;
@@ -1184,8 +1222,6 @@ public class JSONAIMessage
         try
         {
             DumpMessage dump = JsonUtility.FromJson<DumpMessage>(s);
-
-            Debug.Log(dump.Command);
             
             return JSONAIMessage.CreateMessage(dump);
         }
@@ -1208,12 +1244,12 @@ public class DumpMessage : JSONAIMessage
     public string Sensor;
     public string Speaker;
     public string Text;
-    public float Duration;
+    public int Duration;
     public string File;
     public string Effector;
-    public float Force;
-    public float VerticalForce;
-    public float HorizontalForce;
+    public string Force;
+    public string VerticalForce;
+    public string HorizontalForce;
     public int StateDuration;
     public string Item;
     public string Model;
@@ -1267,7 +1303,7 @@ public class Say : JSONAIMessage
 {
     public string Speaker;
     public string Text;
-    public float Duration;
+    public int Duration;
     public Vector2 Position;
 
     public Say() {}
@@ -1304,9 +1340,9 @@ public class AddForce : JSONAIMessage
     public string Effector;
     // Needs both force and direction specific
     // so it can handle one input or two
-    public float Force;
-    public float VerticalForce;
-    public float HorizontalForce;
+    public fnNode Force;
+    public fnNode VerticalForce;
+    public fnNode HorizontalForce;
 
     public AddForce() {}
 }
