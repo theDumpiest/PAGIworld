@@ -312,8 +312,8 @@ public class ControlPanel : MonoBehaviour
 		GUILayout.Label("\nActive\nReflexes:");
 		//construct string of all reflexes
 		st = "";
-		foreach (Reflex s in GlobalVariables.activeReflexes.getCopy())
-			st += s.reflexName + ", ";
+		foreach (ReflexJ s in GlobalVariables.activeReflexes.getCopy())
+			st += s.ReflexName + ", ";
 		GUI.TextArea(new Rect(85,185,800,100), st, 200);
 		GUILayout.EndHorizontal();
 		

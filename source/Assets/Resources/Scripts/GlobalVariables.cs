@@ -22,7 +22,7 @@ public class GlobalVariables : MonoBehaviour {
 	//public float timeScale = 1;
 	
 	public static ThreadSafeList<State> activeStates = new ThreadSafeList<State>();
-	public static ThreadSafeList<Reflex> activeReflexes = new ThreadSafeList<Reflex>();
+	public static ThreadSafeList<ReflexJ> activeReflexes = new ThreadSafeList<ReflexJ>();
 	
 	public static ThreadSafeList<AIMessage> messageQueue = new ThreadSafeList<AIMessage>();
 
@@ -1094,28 +1094,68 @@ public class JSONAIMessage
                 }
                 return sS;
             case "setReflex":
-                SetReflex sRe = new SetReflex()
+                Debug.Log("CREATING SET REFLEX");
+                SetReflex sRe = new SetReflex();
+                sRe.Command = command;
+                sRe.Type = MessageType.SetReflex;
+                sRe.Name = m.Name;
+                if (m.StateConditions != null)
                 {
-                    Command = command,
-                    Type = MessageType.SetReflex,
-                    Name = m.Name,
-                    ProperStateConditions = m.StateConditions.Select(x => new StateConditionJ()
+                    Debug.Log("CREATING STATE CONDITIONS");
+                    sRe.ProperStateConditions = m.StateConditions.Select(x => new ReflexJ.StateConditionJ()
                     {
                         StateName = x.StateName,
                         Negated = x.Negated
-                    }).ToArray(),
-                    ProperSensoryConditions = m.SensoryConditions.Select(x => new SensoryConditionJ()
+                    }).ToArray();
+                }
+
+                if (m.SensoryConditions != null)
+                {
+                    sRe.ProperSensoryConditions = m.SensoryConditions.Select(x => new ReflexJ.SensoryConditionJ()
                     {
                         Sensor = x.Sensor,
                         Comparator = x.Comparator,
                         Value = x.Value
-                    }).ToArray(),
-                    ProperActions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToArray()
-                };
+                    }).ToArray();
+                }
+
+                if (m.Actions != null)
+                {
+                    sRe.ProperActions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToArray();
+                }
+                //SetReflex sRe = new SetReflex()
+                //{
+                //    Command = command,
+                //    Type = MessageType.SetReflex,
+                //    Name = m.Name,
+                //    ProperStateConditions = m.StateConditions.Select(x => new ReflexJ.StateConditionJ()
+                //    {
+                //        StateName = x.StateName,
+                //        Negated = x.Negated
+                //    }).ToArray(),
+                //    ProperSensoryConditions = m.SensoryConditions.Select(x => new ReflexJ.SensoryConditionJ()
+                //    {
+                //        Sensor = x.Sensor,
+                //        Comparator = x.Comparator,
+                //        Value = x.Value
+                //    }).ToArray(),
+                //    ProperActions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToArray()
+                //};
                 if (sRe.Name == null || (sRe.ProperSensoryConditions == null && sRe.ProperStateConditions == null) ||
                     sRe.ProperActions == null)
                 {
                     throw new Exception("Incorrect number of arguments");                    
+                }
+
+                sRe.Reflex = new ReflexJ(sRe.Name);
+                if (sRe.ProperSensoryConditions != null)
+                {
+                    sRe.Reflex.Conditions.AddRange(sRe.ProperSensoryConditions);
+                }
+
+                if (sRe.ProperStateConditions != null)
+                {
+                    sRe.Reflex.Conditions.AddRange(sRe.ProperStateConditions);
                 }
                 return sRe;
             case "removeReflex":
@@ -1222,11 +1262,13 @@ public class JSONAIMessage
         try
         {
             DumpMessage dump = JsonUtility.FromJson<DumpMessage>(s);
+            Debug.Log(dump.Command);
             
             return JSONAIMessage.CreateMessage(dump);
         }
         catch (ArgumentException e)
         {
+            Debug.Log(e.Message);
             Debug.Log("ARGUMENTEXCEPTION");
             return new ErrorMessage() {
                 Message = "Unable to parse command"
@@ -1254,8 +1296,8 @@ public class DumpMessage : JSONAIMessage
     public string Item;
     public string Model;
     public State State { get; set; }
-    public SensoryConditionJ[] ProperSensoryConditions;
-    public StateConditionJ[] ProperStateConditions;
+    public ReflexJ.SensoryConditionJ[] ProperSensoryConditions;
+    public ReflexJ.StateConditionJ[] ProperStateConditions;
     public JSONAIMessage[] ProperActions;
     public DumpMessage[] SensoryConditions;
     public DumpMessage[] StateConditions;
@@ -1364,25 +1406,53 @@ public class SetReflex : JSONAIMessage
     public DumpMessage[] SensoryConditions;
     public DumpMessage[] StateConditions;
     public DumpMessage[] Actions;
-    public SensoryConditionJ[] ProperSensoryConditions;
-    public StateConditionJ[] ProperStateConditions;
+    public ReflexJ.SensoryConditionJ[] ProperSensoryConditions;
+    public ReflexJ.StateConditionJ[] ProperStateConditions;
     public JSONAIMessage[] ProperActions;
+    public ReflexJ Reflex;
 }
 
-[Serializable]
-public class SensoryConditionJ
-{
-    public string Sensor;
-    public string Comparator;
-    public float Value;
-}
+
 
 [Serializable]
-public class StateConditionJ
+public class ReflexJ
 {
-    public string StateName;
-    public bool Negated;
+
+    public abstract class ConditionJ
+    {
+
+    }
+    [Serializable]
+    public class SensoryConditionJ : ConditionJ
+    {
+        public string Sensor;
+        public string Comparator;
+        public float Value;
+    }
+
+    [Serializable]
+    public class StateConditionJ : ConditionJ
+    {
+        public string StateName;
+        public bool Negated;
+    }
+
+
+    public string ReflexName { get; set; }
+    public List<ConditionJ> Conditions { get; set; }
+    public List<JSONAIMessage> Actions { get; set; }
+
+    public ReflexJ(string name)
+    {
+        ReflexName = name;
+        Conditions = new List<ConditionJ>();
+        Actions = new List<JSONAIMessage>();
+    }
+
+
 }
+
+
 
 [Serializable]
 public class RemoveReflex : JSONAIMessage

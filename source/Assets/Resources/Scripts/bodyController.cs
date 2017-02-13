@@ -497,31 +497,31 @@ public class bodyController : worldObject {
 	/// </summary>
 	void checkReflexes()
 	{	
-		List<Reflex> activeReflexes_copy = GlobalVariables.activeReflexes.getCopy();
+		List<ReflexJ> activeReflexes_copy = GlobalVariables.activeReflexes.getCopy();
 		List<State> activeStates_copy = GlobalVariables.activeStates.getCopy();
-		foreach (Reflex r in activeReflexes_copy)
+		foreach (ReflexJ r in activeReflexes_copy)
 		{
 			//are the conditions of r all satisfied?
 			bool allSatisfied = true;
-			foreach (Reflex.condition c in r.conditions)
+			foreach (ReflexJ.ConditionJ c in r.Conditions)
 			{
 				//is c satisfied?
-				if (c is Reflex.stateCondition)
+				if (c is ReflexJ.StateConditionJ)
 				{
 					//Debug.Log("checking state");
-					Reflex.stateCondition C = (Reflex.stateCondition)c;
+					ReflexJ.StateConditionJ C = (ReflexJ.StateConditionJ)c;
 					//check if C.stateName is an active state TODO: make this faster
 					bool foundState = false;
 					foreach (State st in GlobalVariables.activeStates.getCopy())
 					{
-						if (st.stateName == C.stateName)
+						if (st.stateName == C.StateName)
 						{
 							//Debug.Log("found");
 							foundState = true;
 							break;
 						}
 					}
-					if (foundState == C.isNegated)
+					if (foundState == C.Negated)
 					{
 						allSatisfied = false;
 						break;
@@ -530,25 +530,25 @@ public class bodyController : worldObject {
 				else if (c is Reflex.sensoryCondition)
 				{
 					float tolerance = 0.01f;
-					Reflex.sensoryCondition C = (Reflex.sensoryCondition)c;
+					ReflexJ.SensoryConditionJ C = (ReflexJ.SensoryConditionJ)c;
 					//which sensor does it correspond to?
-					float sensorVal = getSensorAspectValue(C.sensorName);
-					if (C.operatorType == '<')
-						allSatisfied = (sensorVal < C.value);
-					else if (C.operatorType == '>')
-						allSatisfied = (sensorVal > C.value);
-					else if (C.operatorType == '=')
+					float sensorVal = getSensorAspectValue(C.Sensor);
+                    if (C.Comparator == "<")
+						allSatisfied = (sensorVal < C.Value);
+                    else if (C.Comparator == ">")
+						allSatisfied = (sensorVal > C.Value);
+                    else if (C.Comparator == "=")
 					{
-						allSatisfied = (Math.Abs(sensorVal - C.value) <= tolerance);
+						allSatisfied = (Math.Abs(sensorVal - C.Value) <= tolerance);
 					}
-					else if (C.operatorType == '}')
-						allSatisfied = (sensorVal >= C.value);
-					else if (C.operatorType == '{')
-						allSatisfied = (sensorVal <= C.value);
-					else if (C.operatorType == '!')
-						allSatisfied = (Math.Abs(sensorVal - C.value) > tolerance);
+                    else if (C.Comparator == "}")
+						allSatisfied = (sensorVal >= C.Value);
+                    else if (C.Comparator == "{")
+						allSatisfied = (sensorVal <= C.Value);
+                    else if (C.Comparator == "!")
+						allSatisfied = (Math.Abs(sensorVal - C.Value) > tolerance);
 					else {
-						throw new Exception("Unrecognized operatorType " + C.operatorType);
+                        throw new Exception("Unrecognized operatorType " + C.Comparator);
 					}
 					//Debug.Log("sensorVal and actual: " + sensorVal.ToString() + ", " + C.value + ", " + allSatisfied);
 						
@@ -567,9 +567,9 @@ public class bodyController : worldObject {
 			{
 				//Debug.Log("all good");
 				if (GlobalVariables.sendNotificationOnReflexFirings)
-					outgoingMessages.Add("reflexFired," + r.reflexName + "\n");
-				foreach (AIMessage a in r.actions)
-					messageQueue.Add (a);
+					outgoingMessages.Add("reflexFired," + r.ReflexName + "\n");
+				foreach (JSONAIMessage a in r.Actions)
+					messageQueueJ.Add (a);
 			}
 		}
 	}
@@ -1627,9 +1627,9 @@ public class bodyController : worldObject {
 
                     case JSONAIMessage.MessageType.GetActiveReflexes:
                         string toR = "activeReflexes";
-                        foreach (Reflex r in GlobalVariables.activeReflexes.getCopy())
+                        foreach (ReflexJ r in GlobalVariables.activeReflexes.getCopy())
                         {
-                            toR += "," + r.reflexName;
+                            toR += "," + r.ReflexName;
                         }
                         outgoingMessages.Add(toR + "\n");
                         break;
@@ -1648,12 +1648,12 @@ public class bodyController : worldObject {
                         outgoingMessages.Add(toR + "\n");
                         break;
                     case JSONAIMessage.MessageType.RemoveReflex:
-                        Reflex re = null;
+                        ReflexJ re = null;
                         RemoveReflex rmReflex = (RemoveReflex)firstMsg;
-                        foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
+                        foreach (ReflexJ R in GlobalVariables.activeReflexes.getCopy())
                         {
                             //Debug.Log("comparing " + R.reflexName + " to " + firstMsg.stringContent);
-                            if (R.reflexName.Trim() == rmReflex.Reflex.Trim())
+                            if (R.ReflexName.Trim() == rmReflex.Reflex.Trim())
                             {
                                 re = R;
                                 break;
@@ -1672,9 +1672,9 @@ public class bodyController : worldObject {
                         //does a reflex with this name already exist? If so, replace it
                         SetReflex setReflex = (SetReflex)firstMsg;
                         re = null;
-                        foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
+                        foreach (ReflexJ R in GlobalVariables.activeReflexes.getCopy())
                         {
-                            if (R.reflexName.Trim() == setReflex.Name.Trim())
+                            if (R.ReflexName.Trim() == setReflex.Name.Trim())
                             {
                                 re = R;
                                 break;
@@ -1688,8 +1688,7 @@ public class bodyController : worldObject {
 
 
 
-                        // THIS IS ACTUALLY NEEDED REMEMBER TO UNCOMMENT THIS
-                        //GlobalVariables.activeReflexes.Add(setReflex.);
+                        GlobalVariables.activeReflexes.Add(setReflex.Reflex);
 
 
 
