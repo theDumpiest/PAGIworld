@@ -274,7 +274,7 @@ public class bodyController : worldObject {
 				sensorNameLookup.Add("pVisual" + x.ToString() + "." + y.ToString(), peripheralSensors[x,y]);*/
 	
 		/*//test:
-		Reflex r = new Reflex("r");
+		Name r = new Name("r");
 		r.addCondition("BPx", '<', 0.5f);
 		
 		GlobalVariables.activeReflexes.Add(r);*/ 
@@ -362,9 +362,11 @@ public class bodyController : worldObject {
 	/// <param name="sensorAspectCode">Sensor aspect code.</param>
 	float getSensorAspectValue(string sensorAspectCode)
 	{
+        // For some reason this comes with some white space, so trim it first
+        string trimmedCode = sensorAspectCode.Trim();
 		float sensorVal=0.0f;
 		bool isStandardSensor = false;
-		switch (sensorAspectCode)
+		switch (trimmedCode)
 		{
 			case "Sx":
 			sensorVal = GetComponent<Rigidbody2D>().velocity.x;
@@ -427,7 +429,7 @@ public class bodyController : worldObject {
 				ts = bodySensor[int.Parse(ss[0].Substring(1))];
 			}
 			if (isTactileSensor)
-			{
+			{ //WHO'S READY FOR ANOTHER MAGICAL ADVENTURE
 				switch(ss[1])
 				{
 				case "tmp":
@@ -527,25 +529,27 @@ public class bodyController : worldObject {
 						break;
 					}
 				}
-				else if (c is Reflex.sensoryCondition)
+				else if (c is ReflexJ.SensoryConditionJ)
 				{
 					float tolerance = 0.01f;
 					ReflexJ.SensoryConditionJ C = (ReflexJ.SensoryConditionJ)c;
 					//which sensor does it correspond to?
 					float sensorVal = getSensorAspectValue(C.Sensor);
                     if (C.Comparator == "<")
-						allSatisfied = (sensorVal < C.Value);
+                    {
+                        allSatisfied = (sensorVal < C.Value);
+                    }
                     else if (C.Comparator == ">")
 						allSatisfied = (sensorVal > C.Value);
                     else if (C.Comparator == "=")
 					{
 						allSatisfied = (Math.Abs(sensorVal - C.Value) <= tolerance);
 					}
-                    else if (C.Comparator == "}")
+                    else if (C.Comparator == ">=")
 						allSatisfied = (sensorVal >= C.Value);
-                    else if (C.Comparator == "{")
+                    else if (C.Comparator == "<=")
 						allSatisfied = (sensorVal <= C.Value);
-                    else if (C.Comparator == "!")
+                    else if (C.Comparator == "!=")
 						allSatisfied = (Math.Abs(sensorVal - C.Value) > tolerance);
 					else {
                         throw new Exception("Unrecognized operatorType " + C.Comparator);
@@ -890,7 +894,7 @@ public class bodyController : worldObject {
 				
         //    case AIMessage.AIMessageType.getReflexes:
         //        string toR = "activeReflexes";
-        //        foreach (Reflex r in GlobalVariables.activeReflexes.getCopy())
+        //        foreach (Name r in GlobalVariables.activeReflexes.getCopy())
         //        {
         //            toR += "," + r.reflexName;
         //        }
@@ -911,8 +915,8 @@ public class bodyController : worldObject {
         //        outgoingMessages.Add(toR + "\n");
         //        break;
         //    case AIMessage.AIMessageType.removeReflex:
-        //        Reflex re = null;
-        //        foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
+        //        Name re = null;
+        //        foreach (Name R in GlobalVariables.activeReflexes.getCopy())
         //        {
         //            //Debug.Log("comparing " + R.reflexName + " to " + firstMsg.stringContent);
         //            if (R.reflexName.Trim() == firstMsg.stringContent.Trim())
@@ -933,7 +937,7 @@ public class bodyController : worldObject {
         //    case AIMessage.AIMessageType.setReflex:
         //        //does a reflex with this name already exist? If so, replace it
         //        re = null;
-        //        foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
+        //        foreach (Name R in GlobalVariables.activeReflexes.getCopy())
         //        {
         //            if (R.reflexName.Trim() == firstMsg.stringContent.Trim())
         //            {
@@ -943,7 +947,7 @@ public class bodyController : worldObject {
         //        }
         //        if (re!=null)
         //            GlobalVariables.activeReflexes.TryRemove(re);
-        //        GlobalVariables.activeReflexes.Add((Reflex)firstMsg.detail);
+        //        GlobalVariables.activeReflexes.Add((Name)firstMsg.detail);
         //        outgoingMessages.Add("reflexUpdated," + firstMsg.stringContent + "\n");
         //        break;
 			
@@ -1372,11 +1376,6 @@ public class bodyController : worldObject {
     void FixedUpdate()
     {
         //check for messages in the message queue (which stores all messages sent by TCP clients)
-
-
-
-
-        //TESTING
         while (messageQueueJ.Count() > 0)
         {
             JSONAIMessage firstMsg;
@@ -1547,7 +1546,7 @@ public class bodyController : worldObject {
                     case JSONAIMessage.MessageType.FindObj:
                         //Debug.Log("received message to find object: " + firstMsg.stringContent);
                         FindObj findObj = (FindObj)firstMsg;
-                        string findObjToReturn = "findObj," + findObj.Item;
+                        string findObjToReturn = "findObj," + findObj.Name;
                         string searchType = (findObj.Model).Trim();
                         //Debug.Log(searchType);
                         if (searchType == "D" || searchType == "PD")
@@ -1556,7 +1555,7 @@ public class bodyController : worldObject {
                             foreach (visualSensor v in visualSensors)
                             {
                                 v.updateSensor();
-                                if (v.name.Trim() == findObj.Item.Trim())
+                                if (v.name.Trim() == findObj.Name.Trim())
                                     findObjToReturn += ",V" + v.indexX.ToString() + "." + v.indexY.ToString();
                             }
                         }
@@ -1565,7 +1564,7 @@ public class bodyController : worldObject {
                             foreach (visualSensor p in peripheralSensors)
                             {
                                 p.updateSensor();
-                                if (p.name.Trim() == findObj.Item.Trim())
+                                if (p.name.Trim() == findObj.Name.Trim())
                                     findObjToReturn += ",P" + p.indexX.ToString() + "." + p.indexY.ToString();
                             }
                         }
@@ -1621,7 +1620,10 @@ public class bodyController : worldObject {
                             GlobalVariables.activeStates.TryRemove(foundState);
                         }
                         if (setState.State.lifeTime != TimeSpan.Zero)
+                        {
+                            Debug.Log("Adding State");
                             GlobalVariables.activeStates.Add(setState.State);
+                        }
                         outgoingMessages.Add("stateUpdated," + setState.Name.Trim() + "\n");
                         break;
 
@@ -1653,7 +1655,7 @@ public class bodyController : worldObject {
                         foreach (ReflexJ R in GlobalVariables.activeReflexes.getCopy())
                         {
                             //Debug.Log("comparing " + R.reflexName + " to " + firstMsg.stringContent);
-                            if (R.ReflexName.Trim() == rmReflex.Reflex.Trim())
+                            if (R.ReflexName.Trim() == rmReflex.Name.Trim())
                             {
                                 re = R;
                                 break;
@@ -1662,10 +1664,10 @@ public class bodyController : worldObject {
                         if (re != null)
                         {
                             GlobalVariables.activeReflexes.TryRemove(re);
-                            outgoingMessages.Add("removedReflex," + rmReflex.Reflex.Trim() + ",OK\n");
+                            outgoingMessages.Add("removedReflex," + rmReflex.Name.Trim() + ",OK\n");
                         }
                         else
-                            outgoingMessages.Add("removedReflexFAILED" + rmReflex.Reflex.Trim() + ",FAILED\n");
+                            outgoingMessages.Add("removedReflexFAILED" + rmReflex.Name.Trim() + ",FAILED\n");
 
                         break;
                     case JSONAIMessage.MessageType.SetReflex:
@@ -1832,8 +1834,8 @@ public class bodyController : worldObject {
                         }
                         break;
                     case JSONAIMessage.MessageType.SensorRequest:
-                        //Debug.Log("checking sensor value " + firstMsg.ToString());
                         SensorRequest sensorRequest = (SensorRequest)firstMsg;
+                        Debug.Log("checking sensor value " + sensorRequest.Sensor);
                         switch (sensorRequest.Sensor[0])
                         {
                             case 'M': //a full map of the visual field
@@ -1854,7 +1856,6 @@ public class bodyController : worldObject {
                                         }
                                     }
                                     sb[sb.Length - 1] = '\n';
-                                    //Debug.Log("msg is " + sb.ToString());
                                     outgoingMessages.Add(sb.ToString());
                                 }
                                 else if (sensorRequest.Sensor.Trim() == "MPN") //peripheral visual field (names only)
@@ -2237,7 +2238,7 @@ public class bodyController : worldObject {
 
         //            case AIMessage.AIMessageType.getReflexes:
         //                string toR = "activeReflexes";
-        //                foreach (Reflex r in GlobalVariables.activeReflexes.getCopy())
+        //                foreach (Name r in GlobalVariables.activeReflexes.getCopy())
         //                {
         //                    toR += "," + r.reflexName;
         //                }
@@ -2258,8 +2259,8 @@ public class bodyController : worldObject {
         //                outgoingMessages.Add(toR + "\n");
         //                break;
         //            case AIMessage.AIMessageType.removeReflex:
-        //                Reflex re = null;
-        //                foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
+        //                Name re = null;
+        //                foreach (Name R in GlobalVariables.activeReflexes.getCopy())
         //                {
         //                    //Debug.Log("comparing " + R.reflexName + " to " + firstMsg.stringContent);
         //                    if (R.reflexName.Trim() == firstMsg.stringContent.Trim())
@@ -2280,7 +2281,7 @@ public class bodyController : worldObject {
         //            case AIMessage.AIMessageType.setReflex:
         //                //does a reflex with this name already exist? If so, replace it
         //                re = null;
-        //                foreach (Reflex R in GlobalVariables.activeReflexes.getCopy())
+        //                foreach (Name R in GlobalVariables.activeReflexes.getCopy())
         //                {
         //                    if (R.reflexName.Trim() == firstMsg.stringContent.Trim())
         //                    {
@@ -2290,7 +2291,7 @@ public class bodyController : worldObject {
         //                }
         //                if (re != null)
         //                    GlobalVariables.activeReflexes.TryRemove(re);
-        //                GlobalVariables.activeReflexes.Add((Reflex)firstMsg.detail);
+        //                GlobalVariables.activeReflexes.Add((Name)firstMsg.detail);
         //                outgoingMessages.Add("reflexUpdated," + firstMsg.stringContent + "\n");
         //                break;
 

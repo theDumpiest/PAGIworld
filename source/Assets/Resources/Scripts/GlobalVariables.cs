@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
 
@@ -1022,10 +1023,10 @@ public class JSONAIMessage
                 {
                     Command = command,
                     Type = MessageType.FindObj,
-                    Item = m.Item,
+                    Name = m.Name,
                     Model = m.Model
                 };
-                if (fO.Item == "" || fO.Item == null || fO.Model == "" || fO.Model == null)
+                if (fO.Name == "" || fO.Name == null || fO.Model == "" || fO.Model == null)
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
@@ -1071,26 +1072,26 @@ public class JSONAIMessage
                     Command = command,
                     Type = MessageType.SetState,
                     Name = m.Name,
-                    StateDuration = m.StateDuration
+                    Duration = m.Duration
                 };
 
-                if (sS.Name == null || sS.StateDuration == null)
+                if (sS.Name == null || sS.Duration == null)
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
 
-                if (m.StateDuration == 0)
+                if (sS.Duration == 0)
                 {
                     sS.State = new State(sS.Name, TimeSpan.Zero);
                 }
-                else if (m.StateDuration < 0)
+                else if (sS.Duration < 0)
                 {
                     sS.State = new State(sS.Name, TimeSpan.MaxValue);
                 }
 
                 else
                 {
-                    sS.State = new State(sS.Name, new TimeSpan(0, 0, 0, 0, m.StateDuration));
+                    sS.State = new State(sS.Name, new TimeSpan(0, 0, 0, 0, sS.Duration));
                 }
                 return sS;
             case "setReflex":
@@ -1099,73 +1100,88 @@ public class JSONAIMessage
                 sRe.Command = command;
                 sRe.Type = MessageType.SetReflex;
                 sRe.Name = m.Name;
-                if (m.StateConditions != null)
+                sRe.Reflex = new ReflexJ(sRe.Name);
+                if (m.Conditions != null)
                 {
-                    Debug.Log("CREATING STATE CONDITIONS");
-                    sRe.ProperStateConditions = m.StateConditions.Select(x => new ReflexJ.StateConditionJ()
-                    {
-                        StateName = x.StateName,
-                        Negated = x.Negated
-                    }).ToArray();
-                }
+                    Debug.Log("WHEREAS");
+                    string regexMatch = @"[<>=!]";
 
-                if (m.SensoryConditions != null)
-                {
-                    sRe.ProperSensoryConditions = m.SensoryConditions.Select(x => new ReflexJ.SensoryConditionJ()
+                    // Sensory conditions should have some kind of comparison operator in them,
+                    // So this regex looks for all possible comparators. Those that match must be
+                    // sensory conditions, and those that don't must be state conditions
+                    Regex senseMatch = new Regex(regexMatch);
+                    List<string> sensoryConditions = m.Conditions.Where(f => senseMatch.IsMatch(f)).ToList();
+                    List<string> stateConditions = m.Conditions.Where(f => !senseMatch.IsMatch(f)).ToList();
+
+                    // Handle Sensory Condition collections
+                    foreach(string sense in sensoryConditions) {
+                        // Split the sense into its parts based on the comparator.
+                        // The first result will be our sensor, and the second result will
+                        // be the value
+                        string[] splitResults = Regex.Split(sense, regexMatch);
+                        // Since Split adds in empty strings into the results, we need to remove those
+                        splitResults = splitResults.Where(f => f != "").ToArray();
+                        // Since comparators have potentially many components (e.g. '<' vs "<="),
+                        // we need to comb through and collect all of the regex matches into a string the
+                        // represents the full comparator
+                        StringBuilder sb = new StringBuilder();
+                        foreach (Match mat in Regex.Matches(sense, regexMatch))
+                        {
+                            sb.Append(mat.Value);
+                        }
+                        // Collect our information
+                        string comparator = sb.ToString();
+                        string sensor = splitResults[0];
+                        float value = float.Parse(splitResults[1]);
+                        Debug.Log(string.Format("Sensory Condition: {0}, {1}, {2}", sensor, comparator, value));
+                        sRe.Reflex.addCondition(sensor, comparator, value);
+                    }
+
+                    // Handle state condition information
+                    foreach (string state in stateConditions)
                     {
-                        Sensor = x.Sensor,
-                        Comparator = x.Comparator,
-                        Value = x.Value
-                    }).ToArray();
+                        string stateName = "";
+                        bool negated = false;
+
+                        // If state condition is negated, set flag appropriately.
+                        // This also means that the actual state name starts at
+                        // the 1st index of the string, not the 0th.
+                        if (state[0] == '-')
+                        {
+                            negated = true;
+                            stateName = state.Substring(1);
+                        }
+
+                        else
+                        {
+                            stateName = state;
+                        }
+
+                        sRe.Reflex.addCondition(stateName, negated);
+
+                    }
                 }
 
                 if (m.Actions != null)
                 {
-                    sRe.ProperActions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToArray();
+                    Debug.Log("GHONOONO");
+                    sRe.Reflex.Actions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToList();
                 }
-                //SetReflex sRe = new SetReflex()
-                //{
-                //    Command = command,
-                //    Type = MessageType.SetReflex,
-                //    Name = m.Name,
-                //    ProperStateConditions = m.StateConditions.Select(x => new ReflexJ.StateConditionJ()
-                //    {
-                //        StateName = x.StateName,
-                //        Negated = x.Negated
-                //    }).ToArray(),
-                //    ProperSensoryConditions = m.SensoryConditions.Select(x => new ReflexJ.SensoryConditionJ()
-                //    {
-                //        Sensor = x.Sensor,
-                //        Comparator = x.Comparator,
-                //        Value = x.Value
-                //    }).ToArray(),
-                //    ProperActions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToArray()
-                //};
-                if (sRe.Name == null || (sRe.ProperSensoryConditions == null && sRe.ProperStateConditions == null) ||
-                    sRe.ProperActions == null)
+                
+                if (sRe.Reflex.ReflexName == null || sRe.Reflex.Conditions == null)
                 {
                     throw new Exception("Incorrect number of arguments");                    
                 }
 
-                sRe.Reflex = new ReflexJ(sRe.Name);
-                if (sRe.ProperSensoryConditions != null)
-                {
-                    sRe.Reflex.Conditions.AddRange(sRe.ProperSensoryConditions);
-                }
-
-                if (sRe.ProperStateConditions != null)
-                {
-                    sRe.Reflex.Conditions.AddRange(sRe.ProperStateConditions);
-                }
                 return sRe;
             case "removeReflex":
                 RemoveReflex rR = new RemoveReflex()
                 {
                     Command = m.Command,
                     Type = MessageType.RemoveReflex,
-                    Reflex = m.Reflex
+                    Name = m.Reflex
                 };
-                if (rR.Reflex == null)
+                if (rR.Name == null)
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
@@ -1292,15 +1308,11 @@ public class DumpMessage : JSONAIMessage
     public string Force;
     public string VerticalForce;
     public string HorizontalForce;
-    public int StateDuration;
-    public string Item;
     public string Model;
     public State State { get; set; }
-    public ReflexJ.SensoryConditionJ[] ProperSensoryConditions;
-    public ReflexJ.StateConditionJ[] ProperStateConditions;
+    public ReflexJ.ConditionJ[] ProperConditions;
     public JSONAIMessage[] ProperActions;
-    public DumpMessage[] SensoryConditions;
-    public DumpMessage[] StateConditions;
+    public string[] Conditions;
     public DumpMessage[] Actions;
     public string Comparator;
     public float Value;
@@ -1370,7 +1382,7 @@ public class LoadTask : JSONAIMessage
 [Serializable]
 public class FindObj : JSONAIMessage
 {
-    public string Item;
+    public string Name;
     public string Model;
 
     public FindObj() {}
@@ -1393,7 +1405,7 @@ public class AddForce : JSONAIMessage
 public class SetState : JSONAIMessage
 {
     public string Name;
-    public int StateDuration;
+    public int Duration;
     public State State { get; set; }
 
     public SetState() {}
@@ -1403,11 +1415,9 @@ public class SetState : JSONAIMessage
 public class SetReflex : JSONAIMessage
 {
     public string Name;
-    public DumpMessage[] SensoryConditions;
-    public DumpMessage[] StateConditions;
+    public DumpMessage[] Conditions;
     public DumpMessage[] Actions;
-    public ReflexJ.SensoryConditionJ[] ProperSensoryConditions;
-    public ReflexJ.StateConditionJ[] ProperStateConditions;
+    public ReflexJ.ConditionJ[] ProperConditions; 
     public JSONAIMessage[] ProperActions;
     public ReflexJ Reflex;
 }
@@ -1439,7 +1449,7 @@ public class ReflexJ
 
 
     public string ReflexName { get; set; }
-    public List<ConditionJ> Conditions { get; set; }
+    public List<ConditionJ> Conditions { get; private set; }
     public List<JSONAIMessage> Actions { get; set; }
 
     public ReflexJ(string name)
@@ -1447,6 +1457,24 @@ public class ReflexJ
         ReflexName = name;
         Conditions = new List<ConditionJ>();
         Actions = new List<JSONAIMessage>();
+    }
+
+    public void addCondition(string name, bool negated) {
+        Conditions.Add(new StateConditionJ()
+        {
+            StateName = name,
+            Negated = negated
+        });
+    }
+
+    public void addCondition(string sensor, string comparator, float value)
+    {
+        Conditions.Add(new SensoryConditionJ()
+        {
+            Sensor = sensor,
+            Comparator = comparator,
+            Value = value
+        });
     }
 
 
@@ -1457,7 +1485,7 @@ public class ReflexJ
 [Serializable]
 public class RemoveReflex : JSONAIMessage
 {
-    public string Reflex;
+    public string Name;
 
     public RemoveReflex() {}
 }
