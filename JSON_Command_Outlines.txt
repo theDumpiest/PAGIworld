@@ -1,0 +1,127 @@
+{
+	"Command" : "dropItem",
+	"Name" : <string>,
+	"Position" : {
+			"x" : <float>,
+			"y" : <float>
+		     },
+	*"Detail" : <string>
+}
+
+
+{
+	"Command" : "sensorRequest",
+	"Sensor" : <string>
+}
+
+
+{
+	"Command" : "say",
+	"Speaker" : <string>,
+	"Text" : <string>,
+	"Duration" : <float>,
+	"Position" : {
+			"x" : <float>,
+			"y" : <float>,
+		     }
+}
+
+
+{
+	"Command" : "Print",
+	"Text" : <string>
+}
+
+
+{
+	"Command" : "loadTask",
+	"File" : <string>
+}
+
+
+{
+	"Command" : "findObj",
+	"Item" : <string>,
+	"Model" : <string>
+}
+
+
+{
+	"Command" : "addForce",
+	"Effector" : <string>,
+	*"Force" : <string>,
+	*"VerticalForce" : <string>,
+	*"HorizontalForce" : <string>
+}
+
+
+{
+	"Command" : "setState",
+	"Name" : <string>,
+	"StateDuration" : <int>
+}
+
+
+
+{
+	"Command" : "setReflex",
+	"Name" : <string>,
+	*"Conditions" : [<string>, <string>, ...],
+	*"Actions" : [ <Command>, <Command>, ...]
+}
+
+
+{
+	"Command" : "removeReflex",
+	"Name" : <string>
+}
+
+
+{
+	"Command" : "getActiveReflexes"
+}
+
+
+{
+	"Command" : "getActiveStates"
+}
+
+
+{
+	"Command" : "createItem",
+	"Name" : <string>,
+	"FilePath" : <string>,
+	"Position" : {
+			"x" : <float>,
+			"y", <float>
+		     },
+	"Mass" : <float>,
+	"Friction" : <int>,
+	"Rotation" : <float>,
+	"Endorphins" : <float>,
+	"Kinematic" : <int btwn 0 & 6>
+}
+
+
+{
+	"Command" : "addForceToItem",
+	"Name" : <string>,
+	"ForceVector" : {
+				"x" : <float>,
+				"y" : <float>
+			},
+	*"Rotation" : <float>
+}
+
+
+{
+	"Command" : "getInfoAboutItem",
+	"Name" : <string>
+}
+
+
+{
+	"Command" : "destroyItem",
+	"Name" : <string>
+}
+* Optional argument
