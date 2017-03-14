@@ -9,7 +9,7 @@ using System.Linq;
 public class GlobalVariables : MonoBehaviour {
 
 	public static bool androidBuild = true;
-	public static string versionNumber = "0.2.5";
+	public static string versionNumber = "0.3.0";
 	
 	public static int portNumber = 42209;
 
@@ -27,16 +27,8 @@ public class GlobalVariables : MonoBehaviour {
 	
 	public static ThreadSafeList<AIMessage> messageQueue = new ThreadSafeList<AIMessage>();
 
-
-
     // TESTING
     public static ThreadSafeList<JSONAIMessage> messageQueueJ = new ThreadSafeList<JSONAIMessage>();
-
-
-
-
-
-
 	public static ThreadSafeList<string> outgoingMessages = new ThreadSafeList<string>();
 	
 	public static bool spokenCommandFieldVisible = false; //whether or not the command box is visible
@@ -598,50 +590,6 @@ public class AIMessage
 		if (s.Trim()=="")
 			throw new Exception("ERR: Received string that was nothing but whitespace!");
 
-
-
-
-
-
-        // TESTING
-        // Vector items must be of the form: "<property name> : { "x" : <val>, "y" : <val> }
-        // Vector arrays are of the form 
-        // "<property name>" : [ { "x" : <val>, "y" : <val> }, { "x" : <val>, "y" : <val> }, ... ]
-        if (s[0] == '{')
-        {
-
-            DumpMessage dm = JSONAIMessage.fromString(s) as DumpMessage;
-            //Debug.Log(s);
-            //JSONAIMessage message = JsonUtility.FromJson<JSONAIMessage>(s);
-
-            //if (message.Command == "dropItem")
-            //{
-            //    DropItem drop = JsonUtility.FromJson<DropItem>(s);
-            //    Debug.Log(drop.Command);
-            //    Debug.Log(drop.Name);
-            //    Debug.Log(drop.Position);
-            //}
-
-            //else if (message.Command == "setReflex")
-            //{
-            //    DumpMessage dM = JsonUtility.FromJson<DumpMessage>(s);
-
-            //    SetReflex sR = JSONAIMessage.CreateMessage(dM) as SetReflex;
-
-            //    foreach (JSONAIMessage m in sR.ProperActions)
-            //    {
-            //        DropItem d = (DropItem)m;
-
-            //        Debug.Log(d.Position);
-            //    }
-            //}
-        }
-
-
-
-
-
-
 		string[] clientArgs = s.Split(',');
 		AIMessage a = new AIMessage(AIMessage.AIMessageType.other, "ERR: Unrecognized Command. Received string:\"" + s + "\"\n", 100f, "");
 		clientArgs[0] = clientArgs[0].Trim();
@@ -932,8 +880,11 @@ public class AIMessage
 }
 
 [Serializable]
-// This class is used to pull the command out of the json in order
-// to figure out what type of instance to create
+/// <summary>
+/// Describes the nature of messages sent from the AI controller to the world and agent.
+/// All Commands built from messages will inherit from this. Main functionality is to convert
+/// JSON messages into objects able to be interpretted by the world.
+/// </summary>
 public class JSONAIMessage
 {
     public enum MessageType { Error, DropItem, SensorRequest, Say, 
@@ -943,10 +894,51 @@ public class JSONAIMessage
 
     // Command associated with a message type
     public string Command;
+    // Type of command. Used for easy switch statements
     public JSONAIMessage.MessageType Type;
 
-    public static JSONAIMessage CreateMessage(DumpMessage m)
+    
+
+    /// <summary>
+    /// Converts a given string from the AI controller into a Command by creating a potential message (DumpMessage)
+    /// and passing that to CreateMessage, which does the bulk of the interpretting
+    /// </summary>
+    /// <param name="s">JSON string taken from the socket</param>
+    /// <returns></returns>
+    public static JSONAIMessage fromString(string s)
     {
+        if (s.Trim() == "")
+        {
+            throw new Exception("ERR: Received string that was nothing but whitespace!");
+        }
+
+        try
+        {
+            DumpMessage dump = JsonUtility.FromJson<DumpMessage>(s);
+            Debug.Log(dump.Command);
+            
+            return JSONAIMessage.CreateMessage(dump);
+        }
+        // Typically will be caught if there was a syntax error in the JSON string, e.g. missing a bracket somewhere
+        catch (ArgumentException e)
+        {
+            Debug.Log(e.Message);
+            Debug.Log("ARGUMENT EXCEPTION");
+            return new ErrorMessage() {
+                Message = "Unable to parse command"
+            };
+        }
+    }
+
+    /// <summary>
+    /// translates a potential message into a Command by deducing the type and building a Command
+    /// from the expected information for that type.
+    /// </summary>
+    /// <param name="m">a DumpMessage, contains all relavent information for Command building</param>
+    /// <returns></returns>
+    private static JSONAIMessage CreateMessage(DumpMessage m)
+    {
+        // Since all Commands share this, we can use this to identify the type
         string command = m.Command;
 
         if (command == null || command == "")
@@ -957,7 +949,7 @@ public class JSONAIMessage
         switch (command)
         {
             case "dropItem":
-                DropItem dI = new DropItem() 
+                DropItem dI = new DropItem()
                 {
                     Command = command,
                     Type = MessageType.DropItem,
@@ -971,6 +963,7 @@ public class JSONAIMessage
                     throw new Exception("Incorrect # of arguments in command");
                 }
                 return dI;
+
             case "sensorRequest":
                 SensorRequest sR = new SensorRequest()
                 {
@@ -978,11 +971,13 @@ public class JSONAIMessage
                     Type = MessageType.SensorRequest,
                     Sensor = m.Sensor
                 };
+
                 if (sR.Sensor == null || sR.Sensor == "")
                 {
                     throw new Exception("Sensor name cannot be empty.");
                 }
                 return sR;
+
             case "say":
                 Say s = new Say()
                 {
@@ -998,6 +993,7 @@ public class JSONAIMessage
                     throw new Exception("Incorrect number of arguments.");
                 }
                 return s;
+
             case "print":
                 Print p = new Print()
                 {
@@ -1006,6 +1002,7 @@ public class JSONAIMessage
                     Text = m.Text
                 };
                 return p;
+
             case "loadTask":
                 LoadTask lT = new LoadTask()
                 {
@@ -1013,11 +1010,13 @@ public class JSONAIMessage
                     Type = MessageType.LoadTask,
                     File = m.File
                 };
+
                 if (lT.File == null || lT.File == "")
                 {
                     throw new Exception("Incorrect Number of arguments");
                 }
                 return lT;
+
             case "findObj":
                 FindObj fO = new FindObj()
                 {
@@ -1026,14 +1025,17 @@ public class JSONAIMessage
                     Name = m.Name,
                     Model = m.Model
                 };
+
                 if (fO.Name == "" || fO.Name == null || fO.Model == "" || fO.Model == null)
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
                 return fO;
+
             case "addForce":
                 AddForce aF = null;
 
+                // TODO: CONVERT FORCE TO VECTOR AND REMOVE HOR/VERT FORCES 
                 if (m.Force != null)
                 {
                     aF = new AddForce()
@@ -1046,9 +1048,10 @@ public class JSONAIMessage
                     };
                 }
 
+                // If Force is null, then it has to be using a HorizontalForce and VerticalForce
                 else
                 {
-                     aF = new AddForce()
+                    aF = new AddForce()
                     {
                         Command = command,
                         Type = MessageType.AddForce,
@@ -1059,13 +1062,14 @@ public class JSONAIMessage
                     };
                 }
 
-                
-                if(aF.Effector == null || aF.Force == null ||
-                    (aF.HorizontalForce == null ^ aF.VerticalForce == null))
+
+                if (aF.Effector == null || aF.Force == null ||
+                    (aF.HorizontalForce == null ^ aF.VerticalForce == null)) // Apparently ^ is xor in C#
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
                 return aF;
+
             case "setState":
                 SetState sS = new SetState()
                 {
@@ -1094,8 +1098,8 @@ public class JSONAIMessage
                     sS.State = new State(sS.Name, new TimeSpan(0, 0, 0, 0, sS.Duration));
                 }
                 return sS;
+
             case "setReflex":
-                Debug.Log("CREATING SET REFLEX");
                 SetReflex sRe = new SetReflex();
                 sRe.Command = command;
                 sRe.Type = MessageType.SetReflex;
@@ -1103,8 +1107,7 @@ public class JSONAIMessage
                 sRe.Reflex = new ReflexJ(sRe.Name);
                 if (m.Conditions != null)
                 {
-                    Debug.Log("WHEREAS");
-                    string regexMatch = @"[<>=!]";
+                    string regexMatch = @"[<>=!]"; // Regex for comparison operators
 
                     // Sensory conditions should have some kind of comparison operator in them,
                     // So this regex looks for all possible comparators. Those that match must be
@@ -1114,7 +1117,8 @@ public class JSONAIMessage
                     List<string> stateConditions = m.Conditions.Where(f => !senseMatch.IsMatch(f)).ToList();
 
                     // Handle Sensory Condition collections
-                    foreach(string sense in sensoryConditions) {
+                    foreach (string sense in sensoryConditions)
+                    {
                         // Split the sense into its parts based on the comparator.
                         // The first result will be our sensor, and the second result will
                         // be the value
@@ -1164,16 +1168,16 @@ public class JSONAIMessage
 
                 if (m.Actions != null)
                 {
-                    Debug.Log("GHONOONO");
                     sRe.Reflex.Actions = m.Actions.Select(x => JSONAIMessage.CreateMessage(x)).ToList();
                 }
-                
+
                 if (sRe.Reflex.ReflexName == null || sRe.Reflex.Conditions == null)
                 {
-                    throw new Exception("Incorrect number of arguments");                    
+                    throw new Exception("Incorrect number of arguments");
                 }
 
                 return sRe;
+
             case "removeReflex":
                 RemoveReflex rR = new RemoveReflex()
                 {
@@ -1186,6 +1190,7 @@ public class JSONAIMessage
                     throw new Exception("Incorrect number of arguments");
                 }
                 return rR;
+
             case "getActiveStates":
                 GetActiveStates gAS = new GetActiveStates()
                 {
@@ -1193,6 +1198,7 @@ public class JSONAIMessage
                     Type = MessageType.GetActiveStates
                 };
                 return gAS;
+
             case "getActiveReflexes":
                 GetActiveReflexes gAR = new GetActiveReflexes()
                 {
@@ -1200,6 +1206,7 @@ public class JSONAIMessage
                     Type = MessageType.GetActiveReflexes
                 };
                 return gAR;
+
             case "createItem":
                 CreateItem cI = new CreateItem()
                 {
@@ -1214,11 +1221,15 @@ public class JSONAIMessage
                     Endorphins = m.Endorphins,
                     Kinematic = m.Kinematic
                 };
-                if (cI.Name == null || cI.FilePath == null || cI.Position == null || cI.Mass == null || cI.Friction == null || cI.Rotation == null || cI.Endorphins == null || cI.Kinematic == null)
+
+                if (cI.Name == null || cI.FilePath == null || cI.Position == null 
+                    || cI.Mass == null || cI.Friction == null || cI.Rotation == null 
+                    || cI.Endorphins == null || cI.Kinematic == null)
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
                 return cI;
+
             case "addForceToItem":
                 AddForceToItem aFTI = new AddForceToItem()
                 {
@@ -1233,6 +1244,7 @@ public class JSONAIMessage
                     throw new Exception("Incorrect number of arguments");
                 }
                 return aFTI;
+
             case "getInfoAboutItem":
                 GetInfoAboutItem gIAI = new GetInfoAboutItem()
                 {
@@ -1240,11 +1252,13 @@ public class JSONAIMessage
                     Type = MessageType.GetInfoAboutItem,
                     Name = m.Name
                 };
+
                 if (gIAI.Name == null)
                 {
                     throw new Exception("Incorrect number of arguments");
                 }
                 return gIAI;
+
             case "destroyItem":
                 DestroyItem dIt = new DestroyItem()
                 {
@@ -1257,6 +1271,7 @@ public class JSONAIMessage
                     throw new Exception("Incorrect number of arguments");
                 }
                 return dIt;
+
             default:
                 ErrorMessage em = new ErrorMessage()
                 {
@@ -1265,30 +1280,6 @@ public class JSONAIMessage
                     Message = "Could not understand command"
                 };
                 return em;
-        }
-    }
-
-    public static JSONAIMessage fromString(string s)
-    {
-        if (s.Trim() == "")
-        {
-            throw new Exception("ERR: Received string that was nothing but whitespace!");
-        }
-
-        try
-        {
-            DumpMessage dump = JsonUtility.FromJson<DumpMessage>(s);
-            Debug.Log(dump.Command);
-            
-            return JSONAIMessage.CreateMessage(dump);
-        }
-        catch (ArgumentException e)
-        {
-            Debug.Log(e.Message);
-            Debug.Log("ARGUMENTEXCEPTION");
-            return new ErrorMessage() {
-                Message = "Unable to parse command"
-            };
         }
     }
 }
@@ -1422,8 +1413,6 @@ public class SetReflex : JSONAIMessage
     public ReflexJ Reflex;
 }
 
-
-
 [Serializable]
 public class ReflexJ
 {
@@ -1479,8 +1468,6 @@ public class ReflexJ
 
 
 }
-
-
 
 [Serializable]
 public class RemoveReflex : JSONAIMessage
