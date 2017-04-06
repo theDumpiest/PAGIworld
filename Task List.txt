@@ -24,3 +24,6 @@
 
 9. Relocate customItems and references
 	BodyController shouldn't have to worry about custom items, and so all references to those should be offloaded elsewhere.
+
+10. Move physics updates to FixedUpdate
+	BodyController has a ton of physics updates in Update that need to be moved to FixedUpdate to properly calculate collisions.
