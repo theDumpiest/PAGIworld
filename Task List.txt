@@ -1,0 +1,26 @@
+1. De-couple object generation and reflex handling.
+	BodyController currently handles all message processing after the raw messages have been converted to JSONAIMessage's. This includes both world generation tasks as well as body related tasks such as reflexes or forces. These two groups need to be separated so that BodyController only processes those messages made sepcifically for the body.
+
+2. Relocate outgoingMessages to GlobalVariables
+	BodyController also keeps the stash of outgoing messages that are created after processing. This list needs to be relocated to GlobalVariables in order to keep BodyController and Control (which sends the outgoing messages) de-coupled.
+
+3. Make sense of the magic nummbers in BodyController Lists
+	Currently sensor lists in the BodyController are created using magic numbers with no context. However, positions in the array correspond to positions around an object, and so documentation within the code shoulld reflect this.
+
+4. Relocate ObjectMenu
+	BodyController has reference to an ObjectMenu that is used for cretaing objects from a GUI. If BodyController is to be de-coupled properly, then this needs relocated and handled elsewhere.
+
+5. privatize sensors
+	Currently all of the sensor arrays in BodyController are public, these should be made private to help hide unneccesary information from other components
+
+6. Decompose BodyController Start function
+	The start function for BodyController has giant lists of array instantiations that are blocky and hard to understand. These should be offloaded to methods that would be able to handle instantiations better using lsits of Vector values.
+
+7. Remove old comments
+	There are just a ton of old commented out code throughout the software that should probably be removed for tidiness sake.
+
+8. Map Strings to Methods
+	There are so many giant switch statements. It may be better to create dictionaries mapping the string values to methods that do the work.
+
+9. Relocate customItems and references
+	BodyController shouldn't have to worry about custom items, and so all references to those should be offloaded elsewhere.
