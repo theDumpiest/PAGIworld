@@ -546,7 +546,6 @@ public class bodyController : worldObject {
 	// Update is called once per frame. Curently Empty until confirmed that message reading is not needed in here
 	void Update () {
 		//update arm positions
-        /// TODO: MOVE THIS TO FIXED UPDATE BECAUSE PHYSICS
 		Vector2 leftRelativePoint = gameObject.GetComponent<Rigidbody2D>().GetRelativePoint(leftHand.GetComponent<DistanceJoint2D>().connectedAnchor);
 		Vector3 leftAnchor = new Vector3(leftRelativePoint.x, leftRelativePoint.y);
 		leftArm[0].transform.position = (leftHand.transform.position*1/3 + leftAnchor*2/3);
@@ -570,108 +569,6 @@ public class bodyController : worldObject {
 			setGrip(false, true);
 		if (Input.GetKeyUp(KeyCode.RightShift))
 			setGrip(false, false);
-		
-		
-		if (Input.GetKeyDown(KeyCode.P))
-			powerMode = !powerMode;
-		float handMoveForce = 50f;
-		if (powerMode)
-			handMoveForce *= 10;
-		//right hand
-		if (Input.GetKey(KeyCode.UpArrow)) {//GetKeyDown is one-time press only
-			//transform.Translate(new Vector3(1,0,0));
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		if (Input.GetKey (KeyCode.DownArrow)) {
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,-handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		if (Input.GetKey(KeyCode.LeftArrow))
-		{
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(-handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		if (Input.GetKey(KeyCode.RightArrow))
-		{
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}		
-		//left hand
-		if (Input.GetKey (KeyCode.W)) {//GetKeyDown is one-time press only
-			//transform.Translate(new Vector3(1,0,0));
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			leftHandRigidBody.AddForce(f);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		if (Input.GetKey (KeyCode.S)) {
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(0,-handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			leftHandRigidBody.AddForce(f);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		if (Input.GetKey(KeyCode.A))
-		{
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(-handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			leftHandRigidBody.AddForce(f);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			Vector2 f = GetComponent<Rigidbody2D>().transform.rotation*new Vector2(handMoveForce,0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
-			leftHandRigidBody.AddForce(f);
-			GetComponent<Rigidbody2D>().AddForce(-f);
-		}
-		
-		
-		/*if (Input.GetKeyDown(KeyCode.LeftShift))
-		{
-			leftHandRigidBody.AddForce(new Vector2(-1000, 0));
-			rightHandRigidBody.AddForce(new Vector2(-1000, 0));
-			rigidbody2D.AddForce(new Vector2(2000, 0));
-		}
-		if (Input.GetKeyDown(KeyCode.RightShift))
-		{
-			leftHandRigidBody.AddForce(new Vector2(1000, 0));
-			rightHandRigidBody.AddForce(new Vector2(1000, 0));
-			rigidbody2D.AddForce(new Vector2(-2000, 0));
-		}*/
-		
-		
-
-		if (Input.GetKeyDown(KeyCode.Space))
-			jump(30000f);
-		if (Input.GetKey(KeyCode.V))
-			GlobalVariables.viewControlsVisible = true;
-		
-		//Rotate
-		if (Input.GetKey(KeyCode.R))
-		{
-			GetComponent<Rigidbody2D>().rotation += 1.0f;
-			GetComponent<Rigidbody2D>().rotation %= 360f;
-			leftHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
-			rightHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
-			//Debug.Log (rigidbody2D.GetRelativePoint(rightAnchor));
-			GetComponent<Rigidbody2D>().AddForce(new Vector2(0,0)); //this forces the screen to update his rotation
-		}
-		if (Input.GetKey(KeyCode.T))
-		{
-			GetComponent<Rigidbody2D>().rotation -= 1.0f;
-			GetComponent<Rigidbody2D>().rotation %= 360f;
-			leftHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
-			rightHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
-			//Debug.Log (rigidbody2D.GetRelativePoint(rightAnchor));
-			GetComponent<Rigidbody2D>().AddForce(new Vector2(0,0)); //this forces the screen to update his rotation
-		}
-		
-		//Move
-		if (Input.GetKey(KeyCode.F))
-			GetComponent<Rigidbody2D>().AddForce(GetComponent<Rigidbody2D>().transform.rotation*(new Vector2(-500f,0)));
-		if (Input.GetKey(KeyCode.G))
-			GetComponent<Rigidbody2D>().AddForce(transform.rotation*new Vector2(500f,0));
 	}
 
 
@@ -681,6 +578,7 @@ public class bodyController : worldObject {
     {
         checkReflexes();
 
+        #region MESSAGE_PROCESSING
         //check for messages in the message queue (which stores all messages sent by TCP clients)
         while (messageQueueJ.Count() > 0)
         {
@@ -1257,6 +1155,118 @@ public class bodyController : worldObject {
                 outgoingMessages.Add("ERR: While processing message of type " + firstMsg.Type + " (see log)");
             }
         }
+#endregion MESSAGE_PROCESSING
+
+        #region KEYBOARD_MOVEMENT
+        if (Input.GetKeyDown(KeyCode.P))
+            powerMode = !powerMode;
+        float handMoveForce = 50f;
+        if (powerMode)
+            handMoveForce *= 10;
+
+
+        //right hand
+        if (Input.GetKey(KeyCode.UpArrow))
+        {//GetKeyDown is one-time press only
+            //transform.Translate(new Vector3(1,0,0));
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(0, handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(0, -handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(-handMoveForce, 0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(handMoveForce, 0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            rightHandRigidBody.AddForce(f);//, ForceMode2D.Impulse);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        //left hand
+        if (Input.GetKey(KeyCode.W))
+        {//GetKeyDown is one-time press only
+            //transform.Translate(new Vector3(1,0,0));
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(0, handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            leftHandRigidBody.AddForce(f);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(0, -handMoveForce);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            leftHandRigidBody.AddForce(f);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(-handMoveForce, 0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            leftHandRigidBody.AddForce(f);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            Vector2 f = GetComponent<Rigidbody2D>().transform.rotation * new Vector2(handMoveForce, 0);//new Vector2(Mathf.Sin(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent,Mathf.Cos(Mathf.Deg2Rad*-rigidbody2D.rotation)*firstMsg.floatContent);
+            leftHandRigidBody.AddForce(f);
+            GetComponent<Rigidbody2D>().AddForce(-f);
+        }
+
+
+        /*if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            leftHandRigidBody.AddForce(new Vector2(-1000, 0));
+            rightHandRigidBody.AddForce(new Vector2(-1000, 0));
+            rigidbody2D.AddForce(new Vector2(2000, 0));
+        }
+        if (Input.GetKeyDown(KeyCode.RightShift))
+        {
+            leftHandRigidBody.AddForce(new Vector2(1000, 0));
+            rightHandRigidBody.AddForce(new Vector2(1000, 0));
+            rigidbody2D.AddForce(new Vector2(-2000, 0));
+        }*/
+
+
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            jump(30000f);
+        if (Input.GetKey(KeyCode.V))
+            GlobalVariables.viewControlsVisible = true;
+
+        //Rotate
+        if (Input.GetKey(KeyCode.R))
+        {
+            GetComponent<Rigidbody2D>().rotation += 1.0f;
+            GetComponent<Rigidbody2D>().rotation %= 360f;
+            leftHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
+            rightHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
+            //Debug.Log (rigidbody2D.GetRelativePoint(rightAnchor));
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 0)); //this forces the screen to update his rotation
+        }
+        if (Input.GetKey(KeyCode.T))
+        {
+            GetComponent<Rigidbody2D>().rotation -= 1.0f;
+            GetComponent<Rigidbody2D>().rotation %= 360f;
+            leftHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
+            rightHandRigidBody.rotation = GetComponent<Rigidbody2D>().rotation;
+            //Debug.Log (rigidbody2D.GetRelativePoint(rightAnchor));
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 0)); //this forces the screen to update his rotation
+        }
+
+        //Move
+        if (Input.GetKey(KeyCode.F))
+            GetComponent<Rigidbody2D>().AddForce(GetComponent<Rigidbody2D>().transform.rotation * (new Vector2(-500f, 0)));
+        if (Input.GetKey(KeyCode.G))
+            GetComponent<Rigidbody2D>().AddForce(transform.rotation * new Vector2(500f, 0));
+        #endregion KEYBOARD_MOVEMENT
+
+
     }
 
     // Late Update is for repositioning cameras
