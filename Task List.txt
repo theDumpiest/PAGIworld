@@ -4,7 +4,7 @@
 2. Relocate outgoingMessages to GlobalVariables
 	BodyController also keeps the stash of outgoing messages that are created after processing. This list needs to be relocated to GlobalVariables in order to keep BodyController and Control (which sends the outgoing messages) de-coupled.
 
-3. Make sense of the magic nummbers in BodyController Lists
+3. Make sense of the magic numbers in BodyController Lists
 	Currently sensor lists in the BodyController are created using magic numbers with no context. However, positions in the array correspond to positions around an object, and so documentation within the code shoulld reflect this.
 
 4. Relocate ObjectMenu
@@ -19,11 +19,11 @@
 7. Remove old comments
 	There are just a ton of old commented out code throughout the software that should probably be removed for tidiness sake.
 
-8. Map Strings to Methods
+***** 8. Map Strings to Methods ******
 	There are so many giant switch statements. It may be better to create dictionaries mapping the string values to methods that do the work.
 
 9. Relocate customItems and references
 	BodyController shouldn't have to worry about custom items, and so all references to those should be offloaded elsewhere.
 
-10. Move physics updates to FixedUpdate
-	BodyController has a ton of physics updates in Update that need to be moved to FixedUpdate to properly calculate collisions.
+10. Change return message to JSON
+	return messages from the system are still in the old csv style string. That should be updated to return a standard JSON message instead.
